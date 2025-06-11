@@ -925,18 +925,35 @@
             updateCartCount();
             setupCartIcon();
             loadProductFromURL();
-        });
-
-        // Load product data from URL parameters
+        });        // Load product data from localStorage or URL parameters (fallback)
         function loadProductFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
-            const productData = {
-                name: urlParams.get('name') || 'Elegant Floral Kurti',
-                price: urlParams.get('price') || '899',
-                image: urlParams.get('image') || 'https://i.pinimg.com/736x/7d/fa/79/7dfa79935e90d7155b946f84f28f838c.jpg',
-                category: urlParams.get('category') || 'Daily Wear',
-                fabric: urlParams.get('fabric') || 'Cotton Blend'
-            };
+            const productId = urlParams.get('id');
+            
+            let productData;
+            
+            // Try to get product data from localStorage first
+            if (productId) {
+                const storedData = localStorage.getItem(`product_detail_${productId}`);
+                if (storedData) {
+                    productData = JSON.parse(storedData);
+                }
+            }
+            
+            // Fallback to URL parameters if localStorage data not found
+            if (!productData) {
+                productData = {
+                    id: urlParams.get('id') || '1',
+                    name: urlParams.get('name') || 'Elegant Floral Kurti',
+                    price: urlParams.get('price') || '899',
+                    image: urlParams.get('image') || 'https://i.pinimg.com/736x/7d/fa/79/7dfa79935e90d7155b946f84f28f838c.jpg',
+                    category: urlParams.get('category') || 'Daily Wear',
+                    fabric: urlParams.get('fabric') || 'Cotton Blend',
+                    description: urlParams.get('description') || 'This beautiful kurti is designed for comfort and style. Perfect for daily wear and special occasions.',
+                    stock: urlParams.get('stock') || 'In Stock',
+                    discount: urlParams.get('discount') || '0'
+                };
+            }
 
             // Update page with product data
             document.getElementById('productTitle').textContent = productData.name;
@@ -946,6 +963,9 @@
             
             // Update first thumbnail
             document.querySelector('.thumbnail.active').src = productData.image;
+            
+            // Store current product data globally for cart functionality
+            window.currentProduct = productData;
         }
 
         // Cart icon setup
@@ -1023,17 +1043,17 @@
             
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
-        }
-
-        // Add to Cart Function
+        }        // Add to Cart Function
         function addToCart() {
-            const productTitle = document.getElementById('productTitle').textContent;
-            const productPrice = document.getElementById('productPrice').textContent.replace('₹', '');
-            const productImage = document.getElementById('mainImage').src;
+            // Use globally stored product data if available, otherwise fallback to DOM elements
+            const productData = window.currentProduct || {};
+            const productTitle = productData.name || document.getElementById('productTitle').textContent;
+            const productPrice = productData.price || document.getElementById('productPrice').textContent.replace('₹', '');
+            const productImage = productData.image || document.getElementById('mainImage').src;
             const quantity = parseInt(document.getElementById('quantity').value);
 
             const product = {
-                id: generateProductId(productTitle),
+                id: productData.id || generateProductId(productTitle),
                 name: productTitle,
                 price: productPrice,
                 image: productImage,
