@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudinary Widget Test - Aadya Fashions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #FF7F50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #e66a40;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .preview {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .preview img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Cloudinary Widget Test</h1>
+        <p>This is a simplified test to verify your Cloudinary upload widget configuration.</p>
+        
+        <div class="info">
+            <strong>Current Configuration:</strong><br>
+            Cloud Name: <code>djrtuevfb</code><br>
+            Upload Preset: <code>aadya-dress</code><br>
+            Folder: <code>samples/ecommerce</code>
+        </div>
+
+        <button id="testBtn" class="btn">🚀 Test Cloudinary Widget</button>
+        <button id="simpleTestBtn" class="btn">📋 Simple Connection Test</button>
+        
+        <div id="result"></div>
+        <div id="preview" class="preview"></div>
+        
+        <h3>Debug Console:</h3>
+        <pre id="console"></pre>
+    </div>
+
+    <!-- Cloudinary Upload Widget Script -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+
+    <script>
+        // Configuration
+        const CLOUD_NAME = 'djrtuevfb';
+        const UPLOAD_PRESET = 'aadya-dress';
+        const FOLDER = 'samples/ecommerce';
+        
+        // Debug console
+        const consoleElement = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleElement.textContent += logMessage;
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+            
+            // Also log to browser console
+            if (type === 'error') {
+                originalError(message);
+            } else {
+                originalLog(message);
+            }
+        }
+        
+        console.log = (message) => addToConsole(message, 'log');
+        console.error = (message) => addToConsole(message, 'error');
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        // Simple connection test
+        document.getElementById('simpleTestBtn').addEventListener('click', () => {
+            addToConsole('Starting simple connection test...');
+            
+            if (typeof cloudinary === 'undefined') {
+                showResult('❌ Cloudinary script not loaded', 'error');
+                addToConsole('Cloudinary script not found');
+                return;
+            }
+            
+            addToConsole('Cloudinary script loaded successfully');
+            
+            try {
+                // Just try to create widget without opening it
+                const testWidget = cloudinary.createUploadWidget({
+                    cloudName: CLOUD_NAME,
+                    uploadPreset: UPLOAD_PRESET,
+                    multiple: false,
+                    maxFiles: 1
+                }, (error, result) => {
+                    if (error) {
+                        addToConsole(`Widget callback error: ${error.message}`);
+                    } else if (result) {
+                        addToConsole(`Widget callback result: ${result.event}`);
+                    }
+                });
+                
+                addToConsole('Widget created successfully');
+                showResult('✅ Widget creation successful! Configuration appears valid.', 'success');
+                
+            } catch (error) {
+                addToConsole(`Widget creation failed: ${error.message}`);
+                showResult(`❌ Widget creation failed: ${error.message}`, 'error');
+            }
+        });
+        
+        // Full widget test
+        document.getElementById('testBtn').addEventListener('click', () => {
+            addToConsole('Starting full widget test...');
+            
+            if (typeof cloudinary === 'undefined') {
+                showResult('❌ Cloudinary script not loaded', 'error');
+                addToConsole('Cloudinary script not found');
+                return;
+            }
+            
+            try {
+                const widget = cloudinary.createUploadWidget({
+                    cloudName: CLOUD_NAME,
+                    uploadPreset: UPLOAD_PRESET,
+                    folder: FOLDER,
+                    multiple: true,
+                    maxFiles: 3,
+                    maxFileSize: 10000000, // 10MB
+                    resourceType: "image",
+                    clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+                    transformation: [
+                        { width: 800, height: 1000, crop: "limit", quality: "auto" }
+                    ],
+                    styles: {
+                        palette: {
+                            window: "#F8C8DC",
+                            sourceBg: "#FFFFFF",
+                            windowBorder: "#FF7F50",
+                            tabIcon: "#FF7F50",
+                            inactiveTabIcon: "#CCCCCC",
+                            menuIcons: "#5A616A",
+                            link: "#FF7F50",
+                            action: "#4CAF50",
+                            inProgress: "#4CAF50",
+                            complete: "#27ae60",
+                            error: "#e74c3c",
+                            textDark: "#2F2F2F",
+                            textLight: "#FFFFFF"
+                        }
+                    }
+                }, (error, result) => {
+                    addToConsole(`Widget callback: error=${!!error}, result=${result?.event || 'none'}`);
+                    
+                    if (error) {
+                        addToConsole(`Upload error: ${error.message}`);
+                        showResult(`❌ Upload failed: ${error.message}`, 'error');
+                        return;
+                    }
+                    
+                    if (result && result.event === "success") {
+                        addToConsole(`Upload successful: ${result.info.secure_url}`);
+                        showResult(`✅ Upload successful! Image URL: ${result.info.secure_url}`, 'success');
+                        
+                        // Show preview
+                        const preview = document.getElementById('preview');
+                        const img = document.createElement('img');
+                        img.src = result.info.secure_url;
+                        img.alt = 'Uploaded image';
+                        preview.appendChild(img);
+                    }
+                    
+                    if (result && result.event === "display-changed") {
+                        addToConsole(`Widget display changed`);
+                    }
+                });
+                
+                addToConsole('Opening widget...');
+                widget.open();
+                showResult('🔄 Widget opened. Please try uploading an image.', 'info');
+                
+            } catch (error) {
+                addToConsole(`Widget error: ${error.message}`);
+                showResult(`❌ Widget error: ${error.message}`, 'error');
+            }
+        });
+        
+        // Initial load test
+        document.addEventListener('DOMContentLoaded', () => {
+            addToConsole('Page loaded, testing Cloudinary availability...');
+            
+            if (typeof cloudinary !== 'undefined') {
+                addToConsole('✅ Cloudinary script loaded successfully');
+                showResult('✅ Cloudinary script loaded successfully. Click "Test Cloudinary Widget" to proceed.', 'success');
+            } else {
+                addToConsole('❌ Cloudinary script not available');
+                showResult('❌ Cloudinary script not loaded. Check your internet connection.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Setup Test & Configuration | Aadya Fashions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFDAB9, #F8C8DC);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #FF7F50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        .success { border-color: #4caf50; background: #e8f5e8; }
+        .warning { border-color: #ff9800; background: #fff3e0; }
+        .error { border-color: #f44336; background: #ffebee; }
+        .info { border-color: #2196f3; background: #e3f2fd; }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .status-card {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+        .config-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background: #FF7F50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #ff6347;
+        }
+        .step-box {
+            background: #e8f4f8;
+            border: 1px solid #b8dce8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .cloudinary-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .cloudinary-ok { background: #d4edda; color: #155724; }
+        .cloudinary-error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Aadya Fashions Setup Test</h1>
+        
+        <div class="test-section info">
+            <h2>📋 Current System Status</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>🔒 Admin Security</h3>
+                    <p>✅ Secret shortcut: <code>Ctrl+Shift+A</code></p>
+                    <p>✅ Password protection</p>
+                    <p>✅ Hidden admin links</p>
+                </div>
+                <div class="status-card">
+                    <h3>☁️ Cloudinary</h3>
+                    <p id="cloudinary-status">
+                        <span class="cloudinary-status cloudinary-ok">✅ Configured</span>
+                    </p>
+                    <p>Cloud: <code>djrtuevfb</code></p>
+                    <p>Preset: <code>aadya-dress</code></p>
+                </div>
+                <div class="status-card">
+                    <h3>🔥 Firebase</h3>
+                    <p id="firebase-status">
+                        <span id="firebase-indicator" class="cloudinary-status cloudinary-error">⚠️ Needs Config</span>
+                    </p>
+                    <p>Firestore for product data</p>
+                    <p>No Storage (using Cloudinary)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section warning">
+            <h2>⚙️ Firebase Configuration Required</h2>
+            <p>Your Firebase configuration still shows placeholder values. To complete the setup:</p>
+            
+            <div class="step-box">
+                <h3>Step 1: Get Firebase Config</h3>
+                <ol>
+                    <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                    <li>Create a new project or use existing one</li>
+                    <li>Enable Firestore Database (test mode is fine for now)</li>
+                    <li>Go to Project Settings → General → Your apps</li>
+                    <li>Add a web app and copy the configuration</li>
+                </ol>
+            </div>
+
+            <div class="step-box">
+                <h3>Step 2: Update Configuration</h3>
+                <p>Replace the placeholder config in these files:</p>
+                <ul>
+                    <li><code>index.html</code> (around line 24)</li>
+                    <li><code>add-kurti.html</code> (around line 24)</li>
+                </ul>
+                
+                <p>Replace this:</p>
+                <div class="config-box">
+const firebaseConfig = {
+    apiKey: "your-api-key-here",
+    authDomain: "your-project.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "your-app-id"
+};</div>
+                
+                <p>With your actual Firebase config (it should look something like this):</p>
+                <div class="config-box">
+const firebaseConfig = {
+    apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    authDomain: "aadya-fashions.firebaseapp.com",
+    projectId: "aadya-fashions",
+    storageBucket: "aadya-fashions.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
+};</div>
+            </div>
+        </div>
+
+        <div class="test-section info">
+            <h2>🧪 Test Functions</h2>
+            <p>Once Firebase is configured, use these buttons to test functionality:</p>
+            
+            <div style="margin: 20px 0;">
+                <button onclick="testCloudinary()">Test Cloudinary Connection</button>
+                <button onclick="testFirebase()">Test Firebase Connection</button>
+                <button onclick="testAdminAccess()">Test Admin Access</button>
+                <button onclick="testProductFlow()">Test Product Flow</button>
+            </div>
+            
+            <div id="test-results"></div>
+        </div>
+
+        <div class="test-section success">
+            <h2>🎯 Next Steps After Firebase Setup</h2>
+            <ol>
+                <li><strong>Test Admin Panel:</strong> Press <code>Ctrl+Shift+A</code> → Enter password → Try adding a product</li>
+                <li><strong>Verify Product Display:</strong> Check if products appear on homepage</li>
+                <li><strong>Test Cart Flow:</strong> Add to cart → View cart → Test checkout</li>
+                <li><strong>Secure for Production:</strong> Update Firestore security rules</li>
+                <li><strong>Optional:</strong> Add backend endpoint for Cloudinary image deletion</li>
+            </ol>
+        </div>
+
+        <div class="test-section info">
+            <h2>📁 File Structure Summary</h2>
+            <div class="config-box">
+✅ index.html          - Homepage with Firestore product loading
+✅ add-kurti.html      - Admin panel with Cloudinary + Firestore
+✅ cart.html           - Cart functionality (compatible with Firestore)
+✅ aadya-cart.js       - Cart logic (no changes needed)
+✅ payment.html        - Payment processing
+✅ order-confirmation.html - Order confirmation
+📖 FIREBASE-SETUP-GUIDE.md - Complete setup instructions
+📊 firebase-status.html    - Integration status tracking</div>
+        </div>
+    </div>
+
+    <script>
+        // Test Functions
+        function testCloudinary() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-section info"><h3>🧪 Cloudinary Test</h3>';
+            
+            if (typeof cloudinary !== 'undefined') {
+                results.innerHTML += '<p>✅ Cloudinary widget is loaded</p>';
+                results.innerHTML += '<p>✅ Configuration: djrtuevfb / aadya-dress</p>';
+            } else {
+                results.innerHTML += '<p>❌ Cloudinary widget not loaded</p>';
+            }
+            results.innerHTML += '</div>';
+        }
+
+        function testFirebase() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-section warning"><h3>🧪 Firebase Test</h3>';
+            results.innerHTML += '<p>⚠️ Firebase config shows placeholder values</p>';
+            results.innerHTML += '<p>Please update the configuration first</p>';
+            results.innerHTML += '</div>';
+        }
+
+        function testAdminAccess() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-section info"><h3>🧪 Admin Access Test</h3>';
+            results.innerHTML += '<p>📋 To test admin access:</p>';
+            results.innerHTML += '<ol>';
+            results.innerHTML += '<li>Go to <a href="index.html">index.html</a></li>';
+            results.innerHTML += '<li>Press <code>Ctrl+Shift+A</code></li>';
+            results.innerHTML += '<li>Enter password: <code>AadyaAdmin2025!</code></li>';
+            results.innerHTML += '<li>Should redirect to admin panel</li>';
+            results.innerHTML += '</ol></div>';
+        }
+
+        function testProductFlow() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-section info"><h3>🧪 Product Flow Test</h3>';
+            results.innerHTML += '<p>📋 Complete product workflow:</p>';
+            results.innerHTML += '<ol>';
+            results.innerHTML += '<li><strong>Admin:</strong> Add product via admin panel</li>';
+            results.innerHTML += '<li><strong>Display:</strong> Product appears on homepage</li>';
+            results.innerHTML += '<li><strong>Cart:</strong> Add to cart functionality</li>';
+            results.innerHTML += '<li><strong>Checkout:</strong> Complete purchase flow</li>';
+            results.innerHTML += '</ol>';
+            results.innerHTML += '<p>⚠️ Requires Firebase configuration first</p></div>';
+        }
+
+        // Check current status
+        document.addEventListener('DOMContentLoaded', function() {
+            // This will show current configuration status
+            const indicator = document.getElementById('firebase-indicator');
+            // In a real implementation, this would check actual Firebase config
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Aadya System Configuration & Test</title>
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFDAB9, #F8C8DC);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #FF7F50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .config-section {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        .success { border-color: #4caf50; background: #e8f5e8; }
+        .warning { border-color: #ff9800; background: #fff3e0; }
+        .error { border-color: #f44336; background: #ffebee; }
+        .info { border-color: #2196f3; background: #e3f2fd; }
+        
+        .config-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            margin: 20px 0;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #FF7F50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff6347;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background: #4caf50; }
+        .status-warning { background: #ff9800; }
+        .status-error { background: #f44336; }
+        
+        .code-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .hidden { display: none; }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .quick-link {
+            padding: 8px 16px;
+            background: #e3f2fd;
+            color: #1976d2;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .quick-link:hover {
+            background: #bbdefb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Aadya Fashions - Final Setup & Testing</h1>
+        
+        <!-- Current Status Overview -->
+        <div class="config-section info">
+            <h2>📊 System Status Overview</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3><span class="status-indicator status-ok"></span>Admin Security</h3>
+                    <p>✅ Secret access (Ctrl+Shift+A)</p>
+                    <p>✅ Password protection</p>
+                    <p>✅ Hidden admin links</p>
+                </div>
+                <div class="test-card">
+                    <h3><span class="status-indicator status-ok"></span>Cloudinary</h3>
+                    <p>✅ Cloud: djrtuevfb</p>
+                    <p>✅ Preset: aadya-dress</p>
+                    <p><button onclick="testCloudinary()">Test Upload</button></p>
+                </div>
+                <div class="test-card">
+                    <h3><span id="firebase-status-indicator" class="status-indicator status-warning"></span>Firebase</h3>
+                    <p id="firebase-status-text">⚠️ Needs configuration</p>
+                    <p><button onclick="checkFirebaseConfig()">Check Config</button></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase Configuration -->
+        <div class="config-section warning">
+            <h2>🔥 Firebase Configuration</h2>
+            <p>Enter your Firebase project configuration to complete the setup:</p>
+            
+            <div class="config-form">
+                <div class="form-group">
+                    <label for="apiKey">API Key:</label>
+                    <input type="text" id="apiKey" placeholder="AIzaSy..." />
+                </div>
+                <div class="form-group">
+                    <label for="authDomain">Auth Domain:</label>
+                    <input type="text" id="authDomain" placeholder="your-project.firebaseapp.com" />
+                </div>
+                <div class="form-group">
+                    <label for="projectId">Project ID:</label>
+                    <input type="text" id="projectId" placeholder="your-project-id" />
+                </div>
+                <div class="form-group">
+                    <label for="storageBucket">Storage Bucket:</label>
+                    <input type="text" id="storageBucket" placeholder="your-project.appspot.com" />
+                </div>
+                <div class="form-group">
+                    <label for="messagingSenderId">Messaging Sender ID:</label>
+                    <input type="text" id="messagingSenderId" placeholder="123456789" />
+                </div>
+                <div class="form-group">
+                    <label for="appId">App ID:</label>
+                    <input type="text" id="appId" placeholder="1:123456789:web:abc123" />
+                </div>
+                
+                <button onclick="generateConfigCode()">Generate Configuration Code</button>
+                <button onclick="testFirebaseConnection()">Test Connection</button>
+            </div>
+            
+            <div id="config-output" class="hidden">
+                <h3>📝 Configuration Code</h3>
+                <p>Copy this code and replace the placeholder config in your files:</p>
+                <div class="code-output" id="config-code"></div>
+                <button onclick="copyConfigCode()">Copy to Clipboard</button>
+            </div>
+        </div>
+
+        <!-- Testing Section -->
+        <div class="config-section success">
+            <h2>🧪 System Testing</h2>
+            <p>Test each component to ensure everything works correctly:</p>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>🔒 Admin Access Test</h3>
+                    <p>Test the secret admin panel access</p>
+                    <button onclick="testAdminAccess()">Test Admin Access</button>
+                    <div id="admin-test-result"></div>
+                </div>
+                <div class="test-card">
+                    <h3>☁️ Image Upload Test</h3>
+                    <p>Test Cloudinary image upload</p>
+                    <button onclick="testImageUpload()">Test Upload</button>
+                    <div id="upload-test-result"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🔥 Database Test</h3>
+                    <p>Test Firestore connection</p>
+                    <button onclick="testFirestore()">Test Database</button>
+                    <div id="firestore-test-result"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🛒 Full Flow Test</h3>
+                    <p>Test complete product flow</p>
+                    <button onclick="testFullFlow()">Test Flow</button>
+                    <div id="flow-test-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="config-section info">
+            <h2>🔗 Quick Access</h2>
+            <div class="quick-links">
+                <a href="index.html" class="quick-link">🏠 Homepage</a>
+                <a href="cart.html" class="quick-link">🛒 Cart</a>
+                <a href="payment.html" class="quick-link">💳 Payment</a>
+                <a href="firebase-status.html" class="quick-link">🔥 Firebase Status</a>
+                <a href="FIREBASE-SETUP-GUIDE.md" class="quick-link">📖 Setup Guide</a>
+                <a href="https://console.firebase.google.com/" target="_blank" class="quick-link">🔧 Firebase Console</a>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="config-section info">
+            <h2>📋 Setup Instructions</h2>
+            <ol>
+                <li><strong>Create Firebase Project:</strong> Go to Firebase Console → Create Project → Enable Firestore</li>
+                <li><strong>Get Configuration:</strong> Project Settings → Your Apps → Add Web App → Copy Config</li>
+                <li><strong>Enter Configuration:</strong> Fill the form above with your Firebase config</li>
+                <li><strong>Generate Code:</strong> Click "Generate Configuration Code"</li>
+                <li><strong>Update Files:</strong> Replace placeholder config in index.html and add-kurti.html</li>
+                <li><strong>Test System:</strong> Use the testing buttons to verify everything works</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Configuration and testing functions
+        function generateConfigCode() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const authDomain = document.getElementById('authDomain').value.trim();
+            const projectId = document.getElementById('projectId').value.trim();
+            const storageBucket = document.getElementById('storageBucket').value.trim();
+            const messagingSenderId = document.getElementById('messagingSenderId').value.trim();
+            const appId = document.getElementById('appId').value.trim();
+            
+            if (!apiKey || !authDomain || !projectId || !storageBucket || !messagingSenderId || !appId) {
+                alert('Please fill in all Firebase configuration fields');
+                return;
+            }
+            
+            const configCode = `const firebaseConfig = {
+    apiKey: "${apiKey}",
+    authDomain: "${authDomain}",
+    projectId: "${projectId}",
+    storageBucket: "${storageBucket}",
+    messagingSenderId: "${messagingSenderId}",
+    appId: "${appId}"
+};`;
+            
+            document.getElementById('config-code').textContent = configCode;
+            document.getElementById('config-output').classList.remove('hidden');
+            
+            // Update status
+            document.getElementById('firebase-status-indicator').className = 'status-indicator status-ok';
+            document.getElementById('firebase-status-text').textContent = '✅ Configuration ready';
+        }
+        
+        function copyConfigCode() {
+            const code = document.getElementById('config-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Configuration code copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy. Please copy manually.');
+            });
+        }
+        
+        function testCloudinary() {
+            const result = document.getElementById('upload-test-result') || createResultDiv('upload-test-result');
+            result.innerHTML = '<div class="loading">Testing Cloudinary...</div>';
+            
+            if (typeof cloudinary !== 'undefined') {
+                result.innerHTML = '<p style="color: #4caf50;">✅ Cloudinary widget loaded successfully!</p>';
+                result.innerHTML += '<p><small>Cloud: djrtuevfb | Preset: aadya-dress</small></p>';
+            } else {
+                result.innerHTML = '<p style="color: #f44336;">❌ Cloudinary widget not available</p>';
+            }
+        }
+        
+        function testAdminAccess() {
+            const result = document.getElementById('admin-test-result') || createResultDiv('admin-test-result');
+            result.innerHTML = `
+                <p style="color: #2196f3;">📋 To test admin access:</p>
+                <ol style="font-size: 12px; margin: 10px 0;">
+                    <li>Go to <a href="index.html" target="_blank">index.html</a></li>
+                    <li>Press <code>Ctrl+Shift+A</code></li>
+                    <li>Enter password: <code>AadyaAdmin2025!</code></li>
+                    <li>Should redirect to admin panel</li>
+                </ol>
+            `;
+        }
+        
+        function testImageUpload() {
+            const result = document.getElementById('upload-test-result') || createResultDiv('upload-test-result');
+            
+            if (typeof cloudinary === 'undefined') {
+                result.innerHTML = '<p style="color: #f44336;">❌ Cloudinary not loaded</p>';
+                return;
+            }
+            
+            result.innerHTML = '<div class="loading">Opening upload widget...</div>';
+            
+            const widget = cloudinary.createUploadWidget({
+                cloudName: 'djrtuevfb',
+                uploadPreset: 'aadya-dress',
+                folder: 'aadya-products',
+                multiple: false,
+                maxFiles: 1,
+                resourceType: 'image'
+            }, (error, uploadResult) => {
+                if (error) {
+                    result.innerHTML = `<p style="color: #f44336;">❌ Upload failed: ${error.message}</p>`;
+                } else if (uploadResult.event === 'success') {
+                    result.innerHTML = `
+                        <p style="color: #4caf50;">✅ Upload successful!</p>
+                        <p><small>URL: ${uploadResult.info.secure_url}</small></p>
+                        <img src="${uploadResult.info.secure_url}" style="max-width: 100px; max-height: 100px; border-radius: 5px;" />
+                    `;
+                }
+            });
+            
+            widget.open();
+        }
+        
+        function testFirestore() {
+            const result = document.getElementById('firestore-test-result') || createResultDiv('firestore-test-result');
+            
+            const configComplete = document.getElementById('apiKey').value.trim() && 
+                                 document.getElementById('projectId').value.trim();
+            
+            if (!configComplete) {
+                result.innerHTML = '<p style="color: #ff9800;">⚠️ Please configure Firebase first</p>';
+                return;
+            }
+            
+            result.innerHTML = '<p style="color: #4caf50;">✅ Config looks good! Test in actual files after update.</p>';
+        }
+        
+        function testFullFlow() {
+            const result = document.getElementById('flow-test-result') || createResultDiv('flow-test-result');
+            result.innerHTML = `
+                <p style="color: #2196f3;">📋 Complete flow test:</p>
+                <ol style="font-size: 12px; margin: 10px 0;">
+                    <li>Configure Firebase (above)</li>
+                    <li>Access admin: <a href="index.html" target="_blank">Ctrl+Shift+A</a></li>
+                    <li>Add product with image</li>
+                    <li>Check homepage display</li>
+                    <li>Test cart functionality</li>
+                    <li>Complete checkout flow</li>
+                </ol>
+            `;
+        }
+        
+        function checkFirebaseConfig() {
+            // This would check if Firebase is properly configured
+            const indicator = document.getElementById('firebase-status-indicator');
+            const text = document.getElementById('firebase-status-text');
+            
+            // Simple check for placeholder values
+            fetch('index.html')
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('your-api-key-here')) {
+                        indicator.className = 'status-indicator status-warning';
+                        text.textContent = '⚠️ Placeholder config detected';
+                    } else {
+                        indicator.className = 'status-indicator status-ok';
+                        text.textContent = '✅ Custom config detected';
+                    }
+                })
+                .catch(() => {
+                    indicator.className = 'status-indicator status-error';
+                    text.textContent = '❌ Cannot check config';
+                });
+        }
+        
+        function createResultDiv(id) {
+            let div = document.getElementById(id);
+            if (!div) {
+                div = document.createElement('div');
+                div.id = id;
+                div.style.marginTop = '10px';
+                div.style.padding = '10px';
+                div.style.background = '#f8f9fa';
+                div.style.borderRadius = '5px';
+                div.style.fontSize = '12px';
+            }
+            return div;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkFirebaseConfig();
+            testCloudinary();
+        });
+    </script>
+</body>
+</html>

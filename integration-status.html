@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Razorpay Integration Status | Aadya</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFDAB9, #F8C8DC);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #FF7F50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .status-card {
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            transition: transform 0.3s ease;
+        }
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-success {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+        .status-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        .status-error {
+            background: #ffe6e6;
+            border-color: #dc3545;
+        }
+        .status-info {
+            background: #e6f3ff;
+            border-color: #007bff;
+        }
+        .status-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF7F50, #FF6B47);
+            color: white;
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        .checklist-item input {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #FF7F50, #FF6B47);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            transition: width 0.3s ease;
+        }
+        .file-status {
+            font-family: monospace;
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Aadya Razorpay Integration Status</h1>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 85%">
+                85% Complete - Almost Ready! 🚀
+            </div>
+        </div>
+
+        <!-- Status Grid -->
+        <div class="status-grid">
+            <!-- Razorpay SDK Status -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>Razorpay SDK</h3>
+                        <p>Successfully loaded and integrated</p>
+                        <div class="file-status">✓ payment.html - Razorpay script included</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment UI Status -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>Payment Interface</h3>
+                        <p>Beautiful UI with Razorpay option</p>
+                        <div class="file-status">✓ COD + Online Payment options ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Configuration Status -->
+            <div class="status-card status-warning">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">⚠️</span>
+                    <div>
+                        <h3>API Key Configuration</h3>
+                        <p>Using placeholder key - needs update</p>
+                        <div class="file-status">⚠️ Key: rzp_test_wprLXkrhIRnVmn (placeholder)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Flow Status -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>Payment Processing</h3>
+                        <p>Complete flow with error handling</p>
+                        <div class="file-status">✓ Success/failure handling implemented</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Status -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>OTP Verification</h3>
+                        <p>Firebase phone authentication integrated</p>
+                        <div class="file-status">✓ payment.html - OTP send/verify logic</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testing Infrastructure -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>Testing Setup</h3>
+                        <p>Test page and documentation ready</p>
+                        <div class="file-status">✓ razorpay-test.html created</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documentation Status -->
+            <div class="status-card status-success">
+                <div style="display: flex; align-items: center;">
+                    <span class="status-icon">✅</span>
+                    <div>
+                        <h3>Documentation</h3>
+                        <p>Complete setup guides available</p>
+                        <div class="file-status">✓ razorpay-setup.md & next-steps.md</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Action Checklist -->
+        <div class="checklist">
+            <h3>🎯 Quick Completion Checklist</h3>
+            <div class="checklist-item">
+                <input type="checkbox" id="check1">
+                <label for="check1">Get Razorpay Test Key from <a href="https://dashboard.razorpay.com/app/keys" target="_blank">Dashboard</a></label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check2">
+                <label for="check2">Update key in payment.html (line ~930)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check3">
+                <label for="check3">Update key in razorpay-test.html (line ~35)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check4">
+                <label for="check4">Test OTP verification on payment.html</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check5">
+                <label for="check5">Test integration with razorpay-test.html</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check6">
+                <label for="check6">Test complete flow: Store → Cart → Payment → Success</label>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="razorpay-test.html" class="btn btn-primary">
+                🧪 Test Integration
+            </a>
+            <a href="payment.html" class="btn btn-secondary">
+                💳 View Payment Page
+            </a>
+            <a href="https://dashboard.razorpay.com/app/keys" target="_blank" class="btn btn-primary">
+                🔑 Get API Keys
+            </a>
+            <a href="index.html" class="btn btn-secondary">
+                🛍️ Start Shopping
+            </a>
+        </div>
+
+        <!-- Integration Summary -->
+        <div style="background: #e6f3ff; padding: 20px; border-radius: 10px; margin: 30px 0;">
+            <h3 style="color: #007bff; margin-bottom: 15px;">🎉 Integration Summary</h3>
+            <p><strong>Your Aadya e-commerce website now supports:</strong></p>
+            <ul style="margin: 15px 0; padding-left: 30px;">
+                <li>💳 Online Payments (Cards, UPI, Net Banking, Wallets)</li>
+                <li>💵 Cash on Delivery</li>
+                <li>📱 Mobile-Responsive Design</li>
+                <li>🔒 Secure Payment Processing</li>
+                <li>✨ Beautiful UI Matching Your Brand</li>
+            </ul>
+            <p><strong style="color: #FF7F50;">Just update the API key and you're ready to accept payments! 🚀</strong></p>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #FFDAB9, #F8C8DC); border-radius: 10px;">
+            <h3 style="color: #2F2F2F; margin-bottom: 10px;">🚀 Ready to Go Live?</h3>
+            <p>Complete your Razorpay KYC verification and switch to live keys when ready!</p>
+            <a href="https://razorpay.com/docs/" target="_blank" class="btn btn-primary" style="margin-top: 15px;">
+                📚 View Documentation
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-check items as user completes them
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const progressFill = document.getElementById('progress-fill');
+        const baseProgress = 80; // Initial base progress
+        const remainingProgress = 20; // Progress covered by checklist
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+        
+        function updateProgress() {
+            const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const totalCount = checkboxes.length;
+            // const baseProgress = 85; // Already completed - Adjust this based on new checklist items
+            // const remainingProgress = 15;
+            const newProgress = baseProgress + (checkedCount / totalCount) * remainingProgress;
+            
+            progressFill.style.width = newProgress + '%';
+            
+            if (newProgress === 100) {
+                progressFill.innerHTML = '🎉 100% Complete - Ready to Accept Payments!';
+                progressFill.style.background = 'linear-gradient(90deg, #4caf50, #45a049)';
+            } else {
+                progressFill.innerHTML = Math.round(newProgress) + '% Complete - Almost Ready! 🚀';
+            }
+        }
+        
+        // Check if running from local file
+        if (window.location.protocol === 'file:') {
+            console.log('✅ Integration Status Page loaded successfully!');
+        }
+    </script>
+</body>
+</html>

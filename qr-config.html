@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Payment Configuration - Aadya Admin</title>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzi_HweeamgBRWOzH4Mq7bjLv_g8elZx0",
+            authDomain: "aadya-fashions.firebaseapp.com",
+            projectId: "aadya-fashions",
+            storageBucket: "aadya-fashions.firebasestorage.app",
+            messagingSenderId: "721311924078",
+            appId: "1:721311924078:web:3e16ea2ba0a07fd6678b7f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        window.firebaseServices = { db, doc, setDoc, getDoc, storage, ref, uploadBytes, getDownloadURL };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF7F50, #FF6B35);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .config-section {
+            padding: 40px;
+        }
+
+        .config-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #FF7F50;
+        }
+
+        .config-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #FF7F50;
+            box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FF7F50, #FF6B35);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 127, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .qr-preview {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .qr-preview img {
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            background: white;
+            max-width: 250px;
+            height: auto;
+        }
+
+        .upload-area {
+            border: 2px dashed #FF7F50;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fff5f5;
+        }
+
+        .upload-area:hover {
+            border-color: #FF6B35;
+            background: #ffebeb;
+        }
+
+        .upload-area.dragover {
+            border-color: #FF6B35;
+            background: #ffebeb;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #FF7F50;
+            margin-bottom: 15px;
+        }
+
+        .status-card {
+            background: #e8f5e8;
+            border: 1px solid #d4edda;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .status-card.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .status-card h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .status-card.error h4 {
+            color: #721c24;
+        }
+
+        .current-config {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #1565c0;
+        }
+
+        .config-value {
+            color: #333;
+            font-family: monospace;
+            background: rgba(255,255,255,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .navigation {
+            background: #013328;
+            padding: 15px 40px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fa-solid fa-qrcode"></i>
+                QR Payment Configuration
+            </h1>
+            <p>Set up your UPI QR code for customer payments</p>
+        </div>
+
+        <div class="navigation">
+            <a href="admin-dashboard.html" class="nav-link">
+                <i class="fa-solid fa-dashboard"></i> Dashboard
+            </a>
+            <a href="add-kurti.html" class="nav-link">
+                <i class="fa-solid fa-plus"></i> Add Product
+            </a>
+            <a href="index.html" class="nav-link">
+                <i class="fa-solid fa-store"></i> View Store
+            </a>
+        </div>
+
+        <div class="config-section">
+            <!-- Current Configuration -->
+            <div class="config-card">
+                <h3>
+                    <i class="fa-solid fa-info-circle"></i>
+                    Current QR Payment Setup
+                </h3>
+                
+                <div class="current-config" id="current-config">
+                    <div class="config-item">
+                        <span class="config-label">UPI ID:</span>
+                        <span class="config-value" id="current-upi">Not configured</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">Business Name:</span>
+                        <span class="config-value" id="current-business">Aadya Fashions</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">QR Code:</span>
+                        <span class="config-value" id="current-qr-status">Not uploaded</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPI Configuration -->
+            <div class="config-card">
+                <h3>
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    UPI Configuration
+                </h3>
+                
+                <div class="form-group">
+                    <label for="upi-id">Your UPI ID *</label>
+                    <input type="text" id="upi-id" placeholder="yourname@paytm" required>
+                    <div class="help-text">
+                        📱 Find your UPI ID in your payment app (GPay, PhonePe, Paytm) under Profile → UPI ID
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="business-name">Business Name</label>
+                    <input type="text" id="business-name" value="Aadya Fashions">
+                    <div class="help-text">
+                        This name will appear in the customer's payment app
+                    </div>
+                </div>
+
+                <button type="button" class="btn" onclick="generateQRCode()">
+                    <i class="fa-solid fa-qrcode"></i>
+                    Generate QR Code
+                </button>
+
+                <div class="qr-preview" id="qr-preview" style="display: none;">
+                    <h4>Generated QR Code Preview:</h4>
+                    <img id="generated-qr" src="" alt="Generated QR Code">
+                    <p class="help-text">This QR code will be shown to customers for payment</p>
+                </div>
+            </div>
+
+            <!-- QR Code Upload (Alternative) -->
+            <div class="config-card">
+                <h3>
+                    <i class="fa-solid fa-upload"></i>
+                    Upload Custom QR Code (Optional)
+                </h3>
+                <p class="help-text" style="margin-bottom: 20px;">
+                    If you have a custom QR code from your bank or payment app, you can upload it here
+                </p>
+
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('qr-upload').click()">
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-upload-alt"></i>
+                    </div>
+                    <h4>Click to upload QR code image</h4>
+                    <p>Or drag and drop your QR code image here</p>
+                    <p><small>Supports JPG, PNG files up to 5MB</small></p>
+                </div>
+                
+                <input type="file" id="qr-upload" accept="image/*" style="display: none;" onchange="handleQRUpload(event)">
+                
+                <div id="upload-preview" style="display: none; margin-top: 20px;">
+                    <h4>Uploaded QR Code:</h4>
+                    <img id="uploaded-qr" src="" alt="Uploaded QR Code" style="max-width: 250px; border-radius: 10px;">
+                </div>
+            </div>
+
+            <!-- Save Configuration -->
+            <div class="config-card">
+                <h3>
+                    <i class="fa-solid fa-save"></i>
+                    Save Configuration
+                </h3>
+                
+                <button type="button" class="btn btn-success" onclick="saveConfiguration()">
+                    <i class="fa-solid fa-save"></i>
+                    Save QR Payment Settings
+                </button>
+                
+                <button type="button" class="btn btn-secondary" onclick="testQRCode()" style="margin-left: 10px;">
+                    <i class="fa-solid fa-test-tube"></i>
+                    Test QR Code
+                </button>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="status-messages"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentQRData = null;
+        let uploadedQRUrl = null;
+
+        // Load current configuration on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentConfiguration();
+            setupDragAndDrop();
+        });
+
+        // Load current QR configuration from Firebase
+        async function loadCurrentConfiguration() {
+            try {
+                const { db, doc, getDoc } = window.firebaseServices;
+                const configRef = doc(db, 'settings', 'qr_payment');
+                const configSnap = await getDoc(configRef);
+
+                if (configSnap.exists()) {
+                    const config = configSnap.data();
+                    
+                    // Update current config display
+                    document.getElementById('current-upi').textContent = config.upiId || 'Not configured';
+                    document.getElementById('current-business').textContent = config.businessName || 'Aadya Fashions';
+                    document.getElementById('current-qr-status').textContent = config.qrCodeUrl ? 'Configured' : 'Not uploaded';
+                    
+                    // Populate form fields
+                    document.getElementById('upi-id').value = config.upiId || '';
+                    document.getElementById('business-name').value = config.businessName || 'Aadya Fashions';
+                    
+                    if (config.qrCodeUrl) {
+                        showStatus('✅ QR Payment configuration loaded successfully', 'success');
+                    }
+                } else {
+                    showStatus('ℹ️ No QR payment configuration found. Please set up your UPI details.', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                showStatus('❌ Error loading configuration: ' + error.message, 'error');
+            }
+        }
+
+        // Generate QR code based on UPI ID
+        function generateQRCode() {
+            const upiId = document.getElementById('upi-id').value.trim();
+            const businessName = document.getElementById('business-name').value.trim();
+
+            if (!upiId) {
+                showStatus('❌ Please enter your UPI ID', 'error');
+                return;
+            }
+
+            // Validate UPI ID format
+            const upiRegex = /^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+$/;
+            if (!upiRegex.test(upiId)) {
+                showStatus('❌ Please enter a valid UPI ID (e.g., yourname@paytm)', 'error');
+                return;
+            }
+
+            // Create UPI URL for QR code
+            const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(businessName)}&cu=INR`;
+            
+            // Generate QR code using free API
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}&bgcolor=FFFFFF&color=000000&margin=15`;
+            
+            // Show preview
+            const qrPreview = document.getElementById('qr-preview');
+            const generatedQR = document.getElementById('generated-qr');
+            
+            generatedQR.src = qrCodeUrl;
+            qrPreview.style.display = 'block';
+            
+            // Store current QR data
+            currentQRData = {
+                upiId: upiId,
+                businessName: businessName,
+                qrCodeUrl: qrCodeUrl,
+                generationType: 'auto'
+            };
+            
+            showStatus('✅ QR Code generated successfully! You can now save the configuration.', 'success');
+        }
+
+        // Handle QR code file upload
+        function handleQRUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showStatus('❌ Please upload an image file', 'error');
+                return;
+            }
+
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                showStatus('❌ File size must be less than 5MB', 'error');
+                return;
+            }
+
+            // Upload to Firebase Storage
+            uploadQRToFirebase(file);
+        }
+
+        // Upload QR code to Firebase Storage
+        async function uploadQRToFirebase(file) {
+            try {
+                showStatus('⏳ Uploading QR code...', 'info');
+                
+                const { storage, ref, uploadBytes, getDownloadURL } = window.firebaseServices;
+                
+                // Create storage reference
+                const timestamp = Date.now();
+                const storageRef = ref(storage, `qr-codes/payment-qr-${timestamp}.${file.name.split('.').pop()}`);
+                
+                // Upload file
+                const snapshot = await uploadBytes(storageRef, file);
+                
+                // Get download URL
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                
+                // Show preview
+                const uploadPreview = document.getElementById('upload-preview');
+                const uploadedQR = document.getElementById('uploaded-qr');
+                
+                uploadedQR.src = downloadURL;
+                uploadPreview.style.display = 'block';
+                
+                // Store upload URL
+                uploadedQRUrl = downloadURL;
+                
+                // Update current QR data
+                currentQRData = {
+                    upiId: document.getElementById('upi-id').value.trim(),
+                    businessName: document.getElementById('business-name').value.trim(),
+                    qrCodeUrl: downloadURL,
+                    generationType: 'uploaded'
+                };
+                
+                showStatus('✅ QR code uploaded successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error uploading QR code:', error);
+                showStatus('❌ Error uploading QR code: ' + error.message, 'error');
+            }
+        }
+
+        // Save configuration to Firebase
+        async function saveConfiguration() {
+            if (!currentQRData) {
+                showStatus('❌ Please generate or upload a QR code first', 'error');
+                return;
+            }
+
+            try {
+                showStatus('⏳ Saving configuration...', 'info');
+                
+                const { db, doc, setDoc } = window.firebaseServices;
+                const configRef = doc(db, 'settings', 'qr_payment');
+                
+                // Save configuration
+                await setDoc(configRef, {
+                    ...currentQRData,
+                    updatedAt: new Date().toISOString(),
+                    status: 'active'
+                });
+                
+                // Update current config display
+                document.getElementById('current-upi').textContent = currentQRData.upiId;
+                document.getElementById('current-business').textContent = currentQRData.businessName;
+                document.getElementById('current-qr-status').textContent = 'Configured';
+                
+                showStatus('✅ QR Payment configuration saved successfully! Your store is ready to accept payments.', 'success');
+                
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                showStatus('❌ Error saving configuration: ' + error.message, 'error');
+            }
+        }
+
+        // Test QR code functionality
+        function testQRCode() {
+            if (!currentQRData) {
+                showStatus('❌ Please generate or upload a QR code first', 'error');
+                return;
+            }
+
+            // Open test payment page
+            window.open('payment.html', '_blank');
+            showStatus('ℹ️ Test page opened in new tab. Add items to cart and test the QR payment flow.', 'info');
+        }
+
+        // Setup drag and drop functionality
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('upload-area');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('dragover');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    document.getElementById('qr-upload').files = files;
+                    handleQRUpload({ target: { files: files } });
+                }
+            }
+        }
+
+        // Show status messages
+        function showStatus(message, type) {
+            const statusContainer = document.getElementById('status-messages');
+            
+            const statusCard = document.createElement('div');
+            statusCard.className = `status-card ${type === 'error' ? 'error' : ''}`;
+            
+            statusCard.innerHTML = `
+                <h4>${type === 'error' ? '❌ Error' : type === 'success' ? '✅ Success' : 'ℹ️ Information'}</h4>
+                <p>${message}</p>
+            `;
+            
+            // Clear previous messages
+            statusContainer.innerHTML = '';
+            statusContainer.appendChild(statusCard);
+            
+            // Auto-remove after 5 seconds for non-error messages
+            if (type !== 'error') {
+                setTimeout(() => {
+                    if (statusContainer.contains(statusCard)) {
+                        statusContainer.removeChild(statusCard);
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

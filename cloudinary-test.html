@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Cloudinary Upload Test | Aadya Fashions</title>
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFDAB9, #F8C8DC);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #FF7F50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        .info { border-color: #2196f3; background: #e3f2fd; }
+        .success { border-color: #4caf50; background: #e8f5e8; }
+        .error { border-color: #f44336; background: #ffebee; }
+        .warning { border-color: #ff9800; background: #fff3e0; }
+        
+        button {
+            background: #FF7F50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff6347;
+        }
+        .config-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+            margin: 10px 0;
+        }
+        .result-display {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+        .uploaded-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin: 10px;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Cloudinary Upload Diagnostic</h1>
+        
+        <div class="test-section info">
+            <h2>📋 Current Configuration</h2>
+            <div class="config-display">
+Cloud Name: djrtuevfb
+Upload Preset: aadya-dress
+Folder: aadya-products
+            </div>
+        </div>
+
+        <div class="test-section warning">
+            <h2>⚠️ Common Issues & Solutions</h2>
+            <h3>Issue 1: Upload Preset Not Found</h3>
+            <p><strong>Solution:</strong> Create the upload preset in Cloudinary dashboard:</p>
+            <ol>
+                <li>Go to <a href="https://cloudinary.com/console" target="_blank">Cloudinary Console</a></li>
+                <li>Go to <strong>Settings</strong> → <strong>Upload</strong></li>
+                <li>Scroll to <strong>Upload presets</strong></li>
+                <li>Click <strong>Add upload preset</strong></li>
+                <li>Preset name: <code>aadya-dress</code></li>
+                <li>Signing mode: <strong>Unsigned</strong></li>
+                <li>Folder: <code>aadya-products</code></li>
+                <li>Save preset</li>
+            </ol>
+
+            <h3>Issue 2: Cross-Origin Issues</h3>
+            <p><strong>Solution:</strong> Enable CORS in Cloudinary settings or use a different upload method.</p>
+
+            <h3>Issue 3: Widget Not Loading</h3>
+            <p><strong>Solution:</strong> Verify Cloudinary script is loaded before initialization.</p>
+        </div>
+
+        <div class="test-section success">
+            <h2>🧪 Test Upload Functions</h2>
+            
+            <h3>Test 1: Basic Widget Test</h3>
+            <button onclick="testBasicWidget()">Test Basic Upload Widget</button>
+            <div id="basic-test-result" class="result-display" style="display: none;"></div>
+
+            <h3>Test 2: Preset Validation</h3>
+            <button onclick="testPresetValidation()">Test Upload Preset</button>
+            <div id="preset-test-result" class="result-display" style="display: none;"></div>
+
+            <h3>Test 3: Alternative Upload Method</h3>
+            <button onclick="testAlternativeUpload()">Test Alternative Method</button>
+            <div id="alternative-test-result" class="result-display" style="display: none;"></div>
+        </div>
+
+        <div class="test-section info">
+            <h2>🔧 Quick Fix Options</h2>
+            <h3>Option 1: Use Default Preset</h3>
+            <button onclick="useDefaultPreset()">Try Default Preset</button>
+            
+            <h3>Option 2: Create New Preset</h3>
+            <button onclick="showPresetInstructions()">Show Preset Creation Steps</button>
+            
+            <h3>Option 3: Use Alternative Config</h3>
+            <button onclick="useAlternativeConfig()">Try Alternative Config</button>
+        </div>
+
+        <div id="upload-results"></div>
+    </div>
+
+    <script>
+        // Current configuration
+        const CLOUDINARY_CONFIG = {
+            cloudName: 'djrtuevfb',
+            uploadPreset: 'aadya-dress',
+            folder: 'aadya-products'
+        };
+
+        // Test functions
+        function testBasicWidget() {
+            const resultDiv = document.getElementById('basic-test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing basic widget functionality...</p>';
+
+            try {
+                if (typeof cloudinary === 'undefined') {
+                    resultDiv.innerHTML = '<p style="color: #f44336;">❌ Cloudinary widget not loaded!</p>';
+                    return;
+                }
+
+                resultDiv.innerHTML = '<p style="color: #4caf50;">✅ Cloudinary widget is loaded</p>';
+                resultDiv.innerHTML += '<p>✅ Creating test widget...</p>';
+
+                const widget = cloudinary.createUploadWidget({
+                    cloudName: CLOUDINARY_CONFIG.cloudName,
+                    uploadPreset: CLOUDINARY_CONFIG.uploadPreset,
+                    multiple: false,
+                    maxFiles: 1,
+                    resourceType: 'image'
+                }, (error, result) => {
+                    if (error) {
+                        resultDiv.innerHTML += `<p style="color: #f44336;">❌ Widget error: ${error.message}</p>`;
+                        if (error.message.includes('preset')) {
+                            resultDiv.innerHTML += '<p style="color: #ff9800;">⚠️ Upload preset "aadya-dress" not found!</p>';
+                            resultDiv.innerHTML += '<p><strong>Fix:</strong> Create the preset in Cloudinary dashboard</p>';
+                        }
+                    } else if (result && result.event === 'success') {
+                        resultDiv.innerHTML += `<p style="color: #4caf50;">✅ Upload successful!</p>`;
+                        resultDiv.innerHTML += `<p>URL: ${result.info.secure_url}</p>`;
+                        resultDiv.innerHTML += `<img src="${result.info.secure_url}" class="uploaded-image" />`;
+                    }
+                });
+
+                widget.open();
+                resultDiv.innerHTML += '<p>✅ Widget opened successfully</p>';
+
+            } catch (e) {
+                resultDiv.innerHTML = `<p style="color: #f44336;">❌ Error: ${e.message}</p>`;
+            }
+        }
+
+        function testPresetValidation() {
+            const resultDiv = document.getElementById('preset-test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Validating upload preset...</p>';
+
+            // Try to create widget to see if preset exists
+            try {
+                const widget = cloudinary.createUploadWidget({
+                    cloudName: CLOUDINARY_CONFIG.cloudName,
+                    uploadPreset: CLOUDINARY_CONFIG.uploadPreset,
+                    multiple: false,
+                    maxFiles: 1
+                }, (error, result) => {
+                    if (error && error.message.includes('preset')) {
+                        resultDiv.innerHTML = `
+                            <p style="color: #f44336;">❌ Upload preset "aadya-dress" not found!</p>
+                            <p><strong>Solution:</strong></p>
+                            <ol>
+                                <li>Go to <a href="https://cloudinary.com/console/settings/upload" target="_blank">Cloudinary Upload Settings</a></li>
+                                <li>Click "Add upload preset"</li>
+                                <li>Name: aadya-dress</li>
+                                <li>Mode: Unsigned</li>
+                                <li>Folder: aadya-products</li>
+                                <li>Save</li>
+                            </ol>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = '<p style="color: #4caf50;">✅ Upload preset configuration looks valid</p>';
+                    }
+                });
+
+                // Don't open, just test creation
+                resultDiv.innerHTML += '<p>✅ Widget creation successful</p>';
+
+            } catch (e) {
+                resultDiv.innerHTML = `<p style="color: #f44336;">❌ Preset validation failed: ${e.message}</p>`;
+            }
+        }
+
+        function testAlternativeUpload() {
+            const resultDiv = document.getElementById('alternative-test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing with unsigned upload...</p>';
+
+            try {
+                const widget = cloudinary.createUploadWidget({
+                    cloudName: CLOUDINARY_CONFIG.cloudName,
+                    uploadPreset: 'ml_default', // Default unsigned preset
+                    folder: 'aadya-test',
+                    multiple: false,
+                    maxFiles: 1,
+                    resourceType: 'image'
+                }, (error, result) => {
+                    if (error) {
+                        resultDiv.innerHTML += `<p style="color: #f44336;">❌ Alternative method failed: ${error.message}</p>`;
+                    } else if (result && result.event === 'success') {
+                        resultDiv.innerHTML += `<p style="color: #4caf50;">✅ Alternative upload works!</p>`;
+                        resultDiv.innerHTML += `<p>This means your Cloudinary account is working, just need to fix the preset.</p>`;
+                        resultDiv.innerHTML += `<img src="${result.info.secure_url}" class="uploaded-image" />`;
+                    }
+                });
+
+                widget.open();
+                resultDiv.innerHTML += '<p>✅ Alternative widget opened</p>';
+
+            } catch (e) {
+                resultDiv.innerHTML += `<p style="color: #f44336;">❌ Alternative test failed: ${e.message}</p>`;
+            }
+        }
+
+        function useDefaultPreset() {
+            alert('Will update your admin panel to use default preset temporarily...');
+            
+            // This would update the admin panel configuration
+            const newConfig = `
+// Updated Cloudinary config for admin panel:
+const CLOUDINARY_CONFIG = {
+    cloudName: 'djrtuevfb',
+    uploadPreset: 'ml_default', // Default preset
+    folder: 'aadya-products'
+};`;
+
+            document.getElementById('upload-results').innerHTML = `
+                <div class="test-section warning">
+                    <h3>🔧 Temporary Fix</h3>
+                    <p>Replace the Cloudinary config in add-kurti.html with:</p>
+                    <div class="config-display">${newConfig}</div>
+                    <p><strong>Note:</strong> This uses the default preset. For production, create your custom preset.</p>
+                </div>
+            `;
+        }
+
+        function showPresetInstructions() {
+            document.getElementById('upload-results').innerHTML = `
+                <div class="test-section info">
+                    <h3>📋 Create Upload Preset Instructions</h3>
+                    <ol>
+                        <li>Go to <a href="https://cloudinary.com/console/settings/upload" target="_blank">Cloudinary Console → Settings → Upload</a></li>
+                        <li>Scroll to "Upload presets" section</li>
+                        <li>Click "Add upload preset"</li>
+                        <li>Fill in:
+                            <ul>
+                                <li><strong>Preset name:</strong> aadya-dress</li>
+                                <li><strong>Signing mode:</strong> Unsigned</li>
+                                <li><strong>Folder:</strong> aadya-products</li>
+                                <li><strong>Resource type:</strong> Image</li>
+                            </ul>
+                        </li>
+                        <li>Click "Save"</li>
+                        <li>Test upload again</li>
+                    </ol>
+                    <p><strong>After creating the preset, your admin panel should work perfectly!</strong></p>
+                </div>
+            `;
+        }
+
+        function useAlternativeConfig() {
+            alert('This will provide alternative configuration options...');
+            
+            document.getElementById('upload-results').innerHTML = `
+                <div class="test-section success">
+                    <h3>🔄 Alternative Configurations</h3>
+                    
+                    <h4>Option 1: Use ml_default preset</h4>
+                    <div class="config-display">
+uploadPreset: 'ml_default'
+// No folder restriction
+                    </div>
+                    
+                    <h4>Option 2: Create new preset</h4>
+                    <div class="config-display">
+uploadPreset: 'aadya_unsigned'
+// Create this in Cloudinary dashboard
+                    </div>
+                    
+                    <h4>Option 3: Signed upload (advanced)</h4>
+                    <div class="config-display">
+// Requires backend endpoint for signature
+// More secure but complex setup
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize test
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Cloudinary test page loaded');
+            console.log('Cloudinary available:', typeof cloudinary !== 'undefined');
+        });
+    </script>
+</body>
+</html>

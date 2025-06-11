@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cart Data</title>
+</head>
+<body>
+    <h1>Adding Test Data to Cart</h1>
+    <p>This will add some test items to your cart...</p>
+    
+    <script>
+        // Add test data to cart
+        const testCart = [
+            {
+                id: "test1",
+                name: "Blue Cotton Kurti",
+                price: "999",
+                image: "https://placehold.co/400x500/4CAF50/white?text=Blue+Kurti",
+                quantity: 2,
+                color: "Blue",
+                size: "M"
+            },
+            {
+                id: "test2", 
+                name: "Red Silk Kurti",
+                price: "1299",
+                image: "https://placehold.co/400x500/F44336/white?text=Red+Kurti",
+                quantity: 1,
+                color: "Red",
+                size: "L"
+            }
+        ];
+        
+        // Save to localStorage
+        localStorage.setItem('aadya_cart', JSON.stringify(testCart));
+        
+        // Redirect to cart page
+        setTimeout(() => {
+            window.location.href = 'cart.html';
+        }, 1000);
+    </script>
+</body>
+</html>
