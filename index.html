@@ -3307,8 +3307,7 @@
                 }
                 
                 // Mark this card as initialized to avoid duplicate handlers
-                card.setAttribute('data-modal-initialized', 'true');
-                  card.addEventListener('click', function(e) {
+                card.setAttribute('data-modal-initialized', 'true');                  card.addEventListener('click', function(e) {
                     // Don't trigger navigation if the Add to Cart button was clicked
                     if (e.target.classList.contains('btn-add-to-cart') || e.target.closest('.btn-add-to-cart')) {
                         return;
@@ -3323,8 +3322,8 @@
                     // Additional details - try to get from localStorage or use defaults
                     let productData = getProductDataFromStorage(productId);
                     
-                    // Create URL parameters for product detail page
-                    const productParams = new URLSearchParams({
+                    // Create product object with all necessary data
+                    const productDetails = {
                         id: productId,
                         name: productName,
                         price: productPrice.replace('₹', ''),
@@ -3334,10 +3333,13 @@
                         description: productData?.description || 'This beautiful kurti is designed for comfort and style. Perfect for daily wear and special occasions.',
                         stock: productData?.stock || 'In Stock',
                         discount: productData?.discount || '0'
-                    });
+                    };
                     
-                    // Redirect to product detail page
-                    window.location.href = `product-detail.html?${productParams.toString()}`;
+                    // Store product details in localStorage with product-specific key
+                    localStorage.setItem(`product_detail_${productId}`, JSON.stringify(productDetails));
+                    
+                    // Redirect to product detail page with only the product ID
+                    window.location.href = `product-detail.html?id=${productId}`;
                 });
             });
             
