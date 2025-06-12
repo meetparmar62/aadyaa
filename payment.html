@@ -12,14 +12,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">    <!-- Cart Functionality Script -->
     <script src="aadya-cart.js"></script>
 
-    <!-- Fast2SMS OTP Integration -->    <!-- Razorpay SDK -->
+    <!-- Razorpay SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <!-- Razorpay Configuration -->
     <script src="razorpay-config.js"></script>
 
-    <!-- Fast2SMS OTP Integration -->
-    <script src="fast2sms-otp.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <!-- <script src="fast2sms-otp.js"></script> -->
+    <script src="firebase-config.js"></script> <!-- Added Firebase config script -->
 
     <style>
         :root {
@@ -241,6 +244,7 @@
             box-shadow: var(--shadow);
         }
 
+        /* Firebase OTP Verification Section */
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -766,6 +770,14 @@
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
         }
+
+        /* Firebase OTP Verification Styles */
+        #firebase-phone-status.success, #firebase-otp-status.success {
+            color: #28a745; 
+        }
+        #firebase-phone-status.error, #firebase-otp-status.error {
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -1064,14 +1076,219 @@
             <p>&copy; 2025 Aadya Fashions. All Rights Reserved.</p>
         </div>
     </footer>      <script>        
-        // Fast2SMS OTP Variables
-        window.isPhoneVerified = false;
-        let fast2smsHandler = null;
+        // Theme toggle functionality (remains the same)
+        // ...
 
-        // Initialize payment page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Fast2SMS handler
-            fast2smsHandler = new Fast2SMSOTPHandler();
+        // Function to update cart count in header (remains the same)
+        // ...
+
+        // Function to display cart items on payment page (remains the same)
+        // ...
+        
+        // Function to calculate and display totals (remains the same)
+        // ...
+
+        // Coupon functionality (remains the same)
+        // ...
+
+        // Payment method selection (remains the same)
+        // ...
+
+        // Form validation and submission (will be modified for Firebase OTP)
+        // ...
+
+        /* Firebase OTP Functions */
+        window.recaptchaVerifier = null;
+        window.confirmationResult = null;
+        let isFirebaseOTPVerified = false;
+
+        function initializeRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        // reCAPTCHA solved, allow signInWithPhoneNumber.
+                        // console.log("reCAPTCHA solved");
+                    },
+                    'expired-callback': () => {
+                        // Response expired. Ask user to solve reCAPTCHA again.
+                        // console.log("reCAPTCHA expired");
+                        const phoneStatus = document.getElementById('firebase-phone-status');
+                        phoneStatus.textContent = 'reCAPTCHA expired. Please try sending OTP again.';
+                        phoneStatus.className = 'error';
+                    }
+                });
+                window.recaptchaVerifier.render().then(function(widgetId) {
+                    window.recaptchaWidgetId = widgetId;
+                }).catch(error => {
+                    console.error("Error rendering reCAPTCHA: ", error);
+                    const phoneStatus = document.getElementById('firebase-phone-status');
+                    phoneStatus.textContent = 'Failed to render reCAPTCHA. Check console.';
+                    phoneStatus.className = 'error';
+                });
+            }
+        }
+
+        async function sendFirebaseOTP() {
+            initializeRecaptcha(); // Ensure reCAPTCHA is initialized
+            const phoneInput = document.getElementById('firebase-phone');
+            const phoneStatus = document.getElementById('firebase-phone-status');
+            const otpInputGroup = document.getElementById('firebase-otp-input-group');
+            let phoneNumber = phoneInput.value.trim();
+
+            if (!/^\+?[1-9]\d{1,14}$/.test(phoneNumber)) { // Basic E.164 format check, adjust as needed
+                 if (/^\d{10}$/.test(phoneNumber)) { // If it's a 10 digit number, assume it's Indian and add +91
+                    phoneNumber = '+91' + phoneNumber;
+                } else {
+                    phoneStatus.textContent = 'Please enter a valid phone number (e.g., +919876543210 or 9876543210).';
+                    phoneStatus.className = 'error';
+                    return;
+                }
+            }
+
+            phoneStatus.textContent = 'Sending OTP...';
+            phoneStatus.className = '';
+
+            try {
+                const appVerifier = window.recaptchaVerifier;
+                window.confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
+                phoneStatus.textContent = `OTP sent to ${phoneNumber}.`;
+                phoneStatus.className = 'success';
+                otpInputGroup.style.display = 'block';
+            } catch (error) {
+                console.error('Error sending Firebase OTP:', error);
+                phoneStatus.textContent = 'Failed to send OTP. ' + (error.message || 'Please try again.');
+                phoneStatus.className = 'error';
+                // Reset reCAPTCHA if it was already rendered, as it might be in an error state
+                if (window.recaptchaVerifier && typeof window.recaptchaVerifier.reset === 'function') {
+                    window.recaptchaVerifier.reset(window.recaptchaWidgetId);
+                } else if (window.grecaptcha && typeof window.grecaptcha.reset === 'function') {
+                    // Fallback if direct verifier reset is not available (less common with invisible reCAPTCHA)
+                    window.grecaptcha.reset(window.recaptchaWidgetId);
+                }
+            }
+        }
+
+        async function verifyFirebaseOTP() {
+            const otpInput = document.getElementById('firebase-otp');
+            const otpStatus = document.getElementById('firebase-otp-status');
+            const enteredOTP = otpInput.value.trim();
+
+            if (!window.confirmationResult) {
+                otpStatus.textContent = 'Please send OTP first.';
+                otpStatus.className = 'error';
+                return;
+            }
+            if (!enteredOTP || enteredOTP.length !== 6) {
+                otpStatus.textContent = 'Please enter a valid 6-digit OTP.';
+                otpStatus.className = 'error';
+                return;
+            }
+
+            otpStatus.textContent = 'Verifying OTP...';
+            otpStatus.className = '';
+
+            try {
+                await window.confirmationResult.confirm(enteredOTP);
+                otpStatus.textContent = 'OTP verified successfully!';
+                otpStatus.className = 'success';
+                isFirebaseOTPVerified = true;
+                // Disable OTP fields after successful verification
+                document.getElementById('firebase-phone').disabled = true;
+                document.getElementById('firebase-otp').disabled = true;
+                document.querySelector('#firebase-otp-input-group button').disabled = true; // Verify OTP button
+                // Also disable the send OTP button
+                const sendOtpButton = document.querySelector('#firebase-phone + button');
+                if(sendOtpButton) sendOtpButton.disabled = true;
+
+            } catch (error) {
+                console.error('Error verifying Firebase OTP:', error);
+                otpStatus.textContent = 'Invalid OTP or error verifying. ' + (error.message || 'Please try again.');
+                otpStatus.className = 'error';
+                isFirebaseOTPVerified = false;
+            }
+        }
+
+        /* Fast2SMS OTP Functions (Commented out) */
+        // let generatedOTP = null; // Store generated OTP
+        // let isOTPVerified = false; // Flag to track OTP verification status
+
+        // async function sendOTP() {
+        //     const phoneInput = document.getElementById('phone');
+        //     const phoneStatus = document.getElementById('phone-status');
+        //     const otpInputGroup = document.getElementById('otp-input-group');
+        //     const phoneNumber = phoneInput.value.trim();
+
+        //     if (!/^\d{10}$/.test(phoneNumber)) {
+        //         phoneStatus.textContent = 'Please enter a valid 10-digit phone number.';
+        //         phoneStatus.className = 'error';
+        //         return;
+        //     }
+
+        //     phoneStatus.textContent = 'Sending OTP...';
+        //     phoneStatus.className = '';
+
+        //     try {
+        //         // Simulate OTP generation for client-side demo (replace with actual backend call)
+        //         generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
+        //         console.log(`Simulated OTP for ${phoneNumber}: ${generatedOTP}`); // For testing
+
+        //         // Simulate API call to Fast2SMS (replace with actual implementation if needed)
+        //         // This is a placeholder. In a real scenario, this would be a server-side call.
+        //         // const response = await fetch('/send-otp', { // Example endpoint
+        //         //     method: 'POST',
+        //         //     headers: { 'Content-Type': 'application/json' },
+        //         //     body: JSON.stringify({ phoneNumber: phoneNumber, otp: generatedOTP }) 
+        //         // });
+        //         // const data = await response.json();
+
+        //         // if (data.success) { // Assuming your backend returns a success flag
+        //         phoneStatus.textContent = `OTP sent to ${phoneNumber}.`;
+        //         phoneStatus.className = 'success';
+        //         otpInputGroup.style.display = 'block';
+        //         // } else {
+        //         //     phoneStatus.textContent = data.message || 'Failed to send OTP. Please try again.';
+        //         //     phoneStatus.className = 'error';
+        //         // }
+        //     } catch (error) {
+        //         console.error('Error sending OTP:', error);
+        //         phoneStatus.textContent = 'Failed to send OTP. Check console for details.';
+        //         phoneStatus.className = 'error';
+        //     }
+        // }
+
+        // function verifyOTP() {
+        //     const otpInput = document.getElementById('otp');
+        //     const otpStatus = document.getElementById('otp-status');
+        //     const enteredOTP = otpInput.value.trim();
+
+        //     if (!generatedOTP) {
+        //         otpStatus.textContent = 'Please send OTP first.';
+        //         otpStatus.className = 'error';
+        //         return;
+        //     }
+
+        //     if (enteredOTP === generatedOTP) {
+        //         otpStatus.textContent = 'OTP verified successfully!';
+        //         otpStatus.className = 'success';
+        //         isOTPVerified = true; 
+        //         // Disable OTP fields after successful verification
+        //         document.getElementById('phone').disabled = true;
+        //         document.getElementById('otp').disabled = true;
+        //         document.querySelector('#phone-input-group button').disabled = true; // Send OTP button
+        //         document.querySelector('#otp-input-group button').disabled = true;   // Verify OTP button
+        //     } else {
+        //         otpStatus.textContent = 'Invalid OTP. Please try again.';
+        //         otpStatus.className = 'error';
+        //         isOTPVerified = false;
+        //     }
+        // }
+
+
+        // Initialize payment page (display cart, totals, etc.)
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeRecaptcha(); // Initialize reCAPTCHA on page load
+            displayCartItemsOnPayment();
             
             // Load order summary
             loadOrderSummary();
@@ -1746,6 +1963,7 @@
 
         function closeAdminModal() {
             const modal = document.getElementById('adminModal');
+           
             modal.classList.remove('show');
             document.getElementById('adminPassword').value = '';
         }
@@ -1797,24 +2015,8 @@
             }
         });
 
-        // ...existing code...    </script>
-
-    <!-- Admin Access Modal -->
-    <div class="admin-modal-overlay" id="adminModal">
-        <div class="admin-modal">
-            <h2><i class="fa-solid fa-shield-alt"></i> Admin Access</h2>
-            <p>Enter the admin password to access the admin panel</p>
-            <input type="password" id="adminPassword" placeholder="Enter admin password" maxlength="50">
-            <div class="admin-modal-buttons">
-                <button type="button" class="btn btn-primary" onclick="verifyAdminPassword()">
-                    <i class="fa-solid fa-key"></i> Access
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">
-                    <i class="fa-solid fa-times"></i> Cancel
-                </button>
-            </div>
-        </div>
-    </div>
+        // ...existing code...
+    </script>
 
 </body>
 </html>
