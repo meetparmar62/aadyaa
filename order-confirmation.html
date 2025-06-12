@@ -670,10 +670,17 @@
                     <div class="order-info">
                         <div class="order-info-label">Order Date</div>
                         <div class="order-info-value" id="order-date">Loading...</div>
-                    </div>
-                    <div class="order-info">
+                    </div>                    <div class="order-info">
                         <div class="order-info-label">Payment Method</div>
                         <div class="order-info-value" id="payment-method">Loading...</div>
+                    </div>
+                    <div class="order-info" id="payment-id-info" style="display: none;">
+                        <div class="order-info-label">Payment ID</div>
+                        <div class="order-info-value" id="payment-id">-</div>
+                    </div>
+                    <div class="order-info" id="payment-status-info" style="display: none;">
+                        <div class="order-info-label">Payment Status</div>
+                        <div class="order-info-value" id="payment-status">-</div>
                     </div>
                     <div class="order-info">
                         <div class="order-info-label">Total Amount</div>
@@ -894,15 +901,40 @@
                 month: 'long',
                 day: 'numeric'
             });
-            
-            // Format payment method
+              // Format payment method
             const paymentMethods = {
                 'cod': 'Cash on Delivery',
+                'razorpay': 'Online Payment (Razorpay)',
                 'upi': 'UPI Payment',
                 'card': 'Credit/Debit Card',
                 'netbanking': 'Net Banking'
             };
             document.getElementById('payment-method').textContent = paymentMethods[order.paymentMethod] || order.paymentMethod;
+            
+            // Show payment details for online payments
+            if (order.paymentId) {
+                document.getElementById('payment-id').textContent = order.paymentId;
+                document.getElementById('payment-id-info').style.display = 'flex';
+            }
+            
+            if (order.paymentStatus) {
+                const statusElement = document.getElementById('payment-status');
+                statusElement.textContent = order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1);
+                
+                // Add status styling
+                if (order.paymentStatus === 'completed') {
+                    statusElement.style.color = '#28a745';
+                    statusElement.innerHTML = '<i class="fa-solid fa-check-circle" style="margin-right: 5px;"></i>' + statusElement.textContent;
+                } else if (order.paymentStatus === 'pending') {
+                    statusElement.style.color = '#ffc107';
+                    statusElement.innerHTML = '<i class="fa-solid fa-clock" style="margin-right: 5px;"></i>' + statusElement.textContent;
+                } else if (order.paymentStatus === 'failed') {
+                    statusElement.style.color = '#dc3545';
+                    statusElement.innerHTML = '<i class="fa-solid fa-times-circle" style="margin-right: 5px;"></i>' + statusElement.textContent;
+                }
+                
+                document.getElementById('payment-status-info').style.display = 'flex';
+            }
             
             document.getElementById('total-amount').textContent = order.total;
             document.getElementById('order-total').textContent = order.total;
@@ -999,7 +1031,9 @@ AADYA FASHIONS - INVOICE
 
 Order Number: ${order.orderId}
 Order Date: ${new Date(order.orderDate).toLocaleDateString()}
-Payment Method: ${order.paymentMethod.toUpperCase()}
+Payment Method: ${paymentMethods[order.paymentMethod] || order.paymentMethod.toUpperCase()}
+${order.paymentId ? `Payment ID: ${order.paymentId}` : ''}
+${order.paymentStatus ? `Payment Status: ${order.paymentStatus.toUpperCase()}` : ''}
 
 BILLING INFORMATION:
 ${order.customerInfo.firstName} ${order.customerInfo.lastName}
