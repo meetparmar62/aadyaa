@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Phone Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        #recaptcha-container {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Firebase Phone Authentication Test</h1>
+    
+    <div id="recaptcha-container"></div>
+    
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" placeholder="Enter 10-digit phone number or +91xxxxxxxxxx">
+        <button onclick="sendOTP()">Send OTP</button>
+    </div>
+    
+    <div class="form-group" id="otp-section" style="display: none;">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" placeholder="Enter 6-digit OTP">
+        <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+    
+    <div id="status"></div>
+
+    <!-- Firebase SDK v9+ -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzi_HweeamgBRWOzH4Mq7bjLv_g8elZx0",
+            authDomain: "aadya-fashions.firebaseapp.com",
+            projectId: "aadya-fashions",
+            storageBucket: "aadya-fashions.firebasestorage.app",
+            messagingSenderId: "721311924078",
+            appId: "1:721311924078:web:3e16ea2ba0a07fd6678b7f"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let recaptchaVerifier;
+        let confirmationResult;
+
+        // Make functions available globally
+        window.sendOTP = async function() {
+            const phoneInput = document.getElementById('phone');
+            const statusDiv = document.getElementById('status');
+            const otpSection = document.getElementById('otp-section');
+            
+            let phoneNumber = phoneInput.value.trim();
+            
+            // Format phone number
+            if (/^\d{10}$/.test(phoneNumber)) {
+                phoneNumber = '+91' + phoneNumber;
+            } else if (!/^\+91\d{10}$/.test(phoneNumber)) {
+                statusDiv.innerHTML = '<div class="status error">Please enter a valid 10-digit phone number or +91xxxxxxxxxx format</div>';
+                return;
+            }
+
+            try {
+                // Initialize reCAPTCHA
+                if (!recaptchaVerifier) {
+                    recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+                        'size': 'normal',
+                        'callback': (response) => {
+                            console.log('reCAPTCHA solved');
+                        }
+                    }, auth);
+                }
+
+                statusDiv.innerHTML = '<div class="status">Sending OTP...</div>';
+                
+                // Send OTP
+                confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+                
+                statusDiv.innerHTML = '<div class="status success">OTP sent successfully to ' + phoneNumber + '</div>';
+                otpSection.style.display = 'block';
+                phoneInput.disabled = true;
+                
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                statusDiv.innerHTML = '<div class="status error">Error: ' + error.message + '</div>';
+                
+                // Reset reCAPTCHA on error
+                if (recaptchaVerifier) {
+                    recaptchaVerifier.clear();
+                    recaptchaVerifier = null;
+                }
+            }
+        };
+
+        window.verifyOTP = async function() {
+            const otpInput = document.getElementById('otp');
+            const statusDiv = document.getElementById('status');
+            const code = otpInput.value.trim();
+
+            if (!code || code.length !== 6) {
+                statusDiv.innerHTML = '<div class="status error">Please enter a valid 6-digit OTP</div>';
+                return;
+            }
+
+            if (!confirmationResult) {
+                statusDiv.innerHTML = '<div class="status error">Please send OTP first</div>';
+                return;
+            }
+
+            try {
+                statusDiv.innerHTML = '<div class="status">Verifying OTP...</div>';
+                
+                const result = await confirmationResult.confirm(code);
+                console.log('User signed in successfully:', result.user);
+                
+                statusDiv.innerHTML = '<div class="status success">OTP verified successfully! User ID: ' + result.user.uid + '</div>';
+                otpInput.disabled = true;
+                
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                statusDiv.innerHTML = '<div class="status error">Invalid OTP: ' + error.message + '</div>';
+            }
+        };
+
+        // Initialize reCAPTCHA when page loads
+        window.addEventListener('load', () => {
+            console.log('Firebase initialized successfully');
+        });
+    </script>
+</body>
+</html>
