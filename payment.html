@@ -9,31 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <!-- Cart Functionality Script -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">    <!-- Cart Functionality Script -->
     <script src="aadya-cart.js"></script>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    <!-- Fast2SMS OTP Integration -->    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- Razorpay Configuration -->
+    <script src="razorpay-config.js"></script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBzi_HweeamgBRWOzH4Mq7bjLv_g8elZx0",
-            authDomain: "aadya-fashions.firebaseapp.com",
-            projectId: "aadya-fashions",
-            storageBucket: "aadya-fashions.firebasestorage.app",
-            messagingSenderId: "721311924078",
-            appId: "1:721311924078:web:3e16ea2ba0a07fd6678b7f"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        auth.languageCode = 'en'; // Optional: Sets language for reCAPTCHA
-
-        window.firebaseServices = { auth, RecaptchaVerifier, signInWithPhoneNumber };
-    </script>
+    <!-- Fast2SMS OTP Integration -->
+    <script src="fast2sms-otp.js"></script>
 
     <style>
         :root {
@@ -415,9 +401,7 @@
             margin-bottom: 20px;
             color: var(--text-charcoal);
             text-align: center; /* Center summary title */
-        }
-
-        .order-item {
+        }        .order-item {
             display: flex;
             align-items: center;
             gap: 15px;
@@ -425,6 +409,7 @@
             border-bottom: 1px solid #eee;
         }
 
+        [data-theme="dark"] .order-item {
             border-bottom-color: rgba(204, 139, 101, 0.2);
         }
 
@@ -504,7 +489,49 @@
         .security-info i {
             color: #4caf50;
             font-size: 1.2rem;
-        }        /* Mobile Responsive */
+        }        /* Payment Method Details */
+        .payment-details {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--accent-coral);
+            background: rgba(255, 127, 80, 0.05);
+        }
+
+        .payment-details h4 {
+            color: var(--accent-coral);
+            margin-bottom: 15px;
+            font-family: var(--font-heading);
+        }
+
+        .payment-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .payment-feature {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 127, 80, 0.1);
+        }
+
+        .payment-feature i {
+            font-size: 2rem;
+            color: var(--accent-coral);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .payment-feature p {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             .payment-content {
                 grid-template-columns: 1fr;
@@ -835,9 +862,7 @@
                                     <div id="phone-status" style="margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; background: #f8f9fa;">
                                         <small><i class="fa-solid fa-info-circle"></i> We'll send an OTP to verify your phone number.</small>
                                     </div>
-                                </div>
-
-                                <!-- OTP Verification Section (Initially Hidden) -->
+                                </div>                                <!-- OTP Verification Section (Initially Hidden) -->
                                 <div class="form-group full-width" id="otp-container" style="display: none;">
                                     <label for="otp-code">Enter OTP *</label>
                                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -900,7 +925,16 @@
                             <h2 class="section-title">
                                 <i class="fa-solid fa-credit-card"></i>
                                 Payment Method
-                            </h2>                              <div class="payment-methods">
+                            </h2>                            <div class="payment-methods">
+                                <div class="payment-method" data-method="razorpay">
+                                    <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
+                                    <i class="fa-solid fa-credit-card"></i>
+                                    <div>
+                                        <label for="razorpay">Online Payment</label>
+                                        <small>UPI, Cards, Net Banking, Wallets</small>
+                                    </div>
+                                </div>
+                                
                                 <div class="payment-method selected" data-method="cod">
                                     <input type="radio" name="paymentMethod" value="cod" id="cod" checked>
                                     <i class="fa-solid fa-money-bills"></i>
@@ -909,38 +943,46 @@
                                         <small>Pay when your order is delivered</small>
                                     </div>
                                 </div>
-                                
-                                <div class="payment-method" data-method="upi-qr">
-                                    <input type="radio" name="paymentMethod" value="upi-qr" id="upi-qr">
-                                    <i class="fa-solid fa-qrcode"></i>
-                                    <div>
-                                        <label for="upi-qr">UPI Payment (QR Code)</label>
-                                        <small>Scan QR code to pay via UPI</small>
+                            </div>
+
+                            <!-- Payment Method Details -->
+                            <div id="razorpay-details" class="payment-details" style="display: none;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                                    <h4 style="margin: 0 0 15px 0; display: flex; align-items: center;">
+                                        <i class="fa-solid fa-shield-halved" style="margin-right: 10px;"></i>
+                                        Secure Online Payment
+                                    </h4>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin: 15px 0;">
+                                        <div style="text-align: center;">
+                                            <i class="fa-brands fa-cc-visa" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                                            <p style="margin: 0; font-size: 0.8rem;">Visa Cards</p>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                                            <p style="margin: 0; font-size: 0.8rem;">Mastercard</p>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <i class="fa-solid fa-university" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                                            <p style="margin: 0; font-size: 0.8rem;">Net Banking</p>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <i class="fa-solid fa-mobile-alt" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                                            <p style="margin: 0; font-size: 0.8rem;">UPI</p>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <i class="fa-solid fa-wallet" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                                            <p style="margin: 0; font-size: 0.8rem;">Wallets</p>
+                                        </div>
                                     </div>
-                                </div>                        
-                            </div>
-                            
-                            <!-- QR Code Section (Initially Hidden) -->
-                            <div id="qr-payment-section" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center;">
-                                <h3 style="margin-bottom: 15px; color: var(--text-charcoal);">
-                                    <i class="fa-solid fa-qrcode" style="margin-right: 10px;"></i>
-                                    Scan to Pay
-                                </h3>
-                                <div style="background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                                    <!-- Replace this with your actual QR code image -->
-                                    <img src="https://i.postimg.cc/X7vG7zdL/photo-2025-06-10-12-03-13.jpg" alt="UPI QR Code" style="width: 200px; height: 200px; border-radius: 8px;">
-                                </div>
-                                <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                                    <i class="fa-solid fa-info-circle" style="margin-right: 5px;"></i>
-                                    Scan this QR code with any UPI app (PhonePe, Paytm, GPay, etc.)
-                                </p>
-                                <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 5px;">
-                                    <small style="color: #2d5a2d;">
-                                        <i class="fa-solid fa-shield-check" style="margin-right: 5px;"></i>
-                                        After payment, click "Confirm Payment" below to complete your order
-                                    </small>
+                                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 15px;">
+                                        <p style="margin: 0; font-size: 0.85rem; display: flex; align-items: center;">
+                                            <i class="fa-solid fa-lock" style="margin-right: 8px;"></i>
+                                            256-bit SSL encryption • PCI DSS compliant • Instant payment confirmation
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
+  
                         </div>
 
                         <!-- Special Instructions -->
@@ -1022,14 +1064,15 @@
             <p>&copy; 2025 Aadya Fashions. All Rights Reserved.</p>
         </div>
     </footer>      <script>        
-        // Firebase OTP Variables
-        window.confirmationResult = null;
+        // Fast2SMS OTP Variables
         window.isPhoneVerified = false;
-        let recaptchaVerifier = null;
-
+        let fast2smsHandler = null;
 
         // Initialize payment page
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Fast2SMS handler
+            fast2smsHandler = new Fast2SMSOTPHandler();
+            
             // Load order summary
             loadOrderSummary();
             
@@ -1043,54 +1086,29 @@
             setupPaymentMethods();
               // Setup form validation
             setupFormValidation();
-
-            // Initialize reCAPTCHA
-            initializeRecaptcha();
-        });            function initializeRecaptcha() {
-            const { auth, RecaptchaVerifier } = window.firebaseServices;
-            if (!recaptchaVerifier) { // Ensure it's initialized only once
-                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    'size': 'normal', // Changed to normal from invisible for better compatibility
-                    'callback': (response) => {
-                        console.log("reCAPTCHA solved");
-                        // Enable the Send OTP button
-                        document.getElementById('send-otp-btn').disabled = false;
-                    },
-                    'expired-callback': () => {
-                        // Response expired. Ask user to solve reCAPTCHA again.
-                        showError('reCAPTCHA verification expired. Please try sending OTP again.');
-                        document.getElementById('send-otp-btn').disabled = false;
-                        updatePhoneStatus('reCAPTCHA expired. Try again.', 'error');
-                    }
-                });
-                recaptchaVerifier.render().then(widgetId => {
-                    window.recaptchaWidgetId = widgetId;
-                    console.log("reCAPTCHA rendered successfully");
-                }).catch(error => {
-                    console.error("RecaptchaVerifier render error:", error);
-                    showError("Failed to initialize reCAPTCHA. Please refresh the page.");
-                });
-            }
-        }        async function sendOTP() {
+        });        // Fast2SMS OTP Functions
+        async function sendOTP() {
             const phoneInput = document.getElementById('phone');
             const sendOtpBtn = document.getElementById('send-otp-btn');
-            const phoneStatus = document.getElementById('phone-status');
             let phoneNumber = phoneInput.value.trim();
 
-            // Add mandatory +91 prefix if not present
-            if (!phoneNumber.startsWith('+91')) {
-                // Remove non-digit characters and prepend country code
-                const digits = phoneNumber.replace(/\D/g, '');
-                phoneNumber = '+91' + digits;
-                phoneInput.value = phoneNumber;
-            }
-
-            // Validate Indian phone number format with country code
-            if (!/^\+91[0-9]{10}$/.test(phoneNumber)) {
-                updatePhoneStatus('Please enter a valid 10-digit Indian phone number with country code +91 (e.g., +919876543210).', 'error');
+            // Clean and validate phone number
+            const cleanNumber = phoneNumber.replace(/\D/g, '');
+            
+            // Handle different phone number formats
+            let validatedNumber = '';
+            if (cleanNumber.length === 10 && /^[6-9]/.test(cleanNumber)) {
+                validatedNumber = cleanNumber;
+            } else if (cleanNumber.length === 12 && cleanNumber.startsWith('91')) {
+                validatedNumber = cleanNumber.substring(2);
+            } else {
+                updatePhoneStatus('Please enter a valid 10-digit Indian mobile number (e.g., 9876543210)', 'error');
                 phoneInput.style.borderColor = '#dc3545';
                 return;
             }
+
+            // Update phone input with clean format
+            phoneInput.value = `+91${validatedNumber}`;
             phoneInput.style.borderColor = '';
 
             sendOtpBtn.disabled = true;
@@ -1098,42 +1116,32 @@
             updatePhoneStatus('Sending OTP...', 'info');
 
             try {
-                const { auth, signInWithPhoneNumber } = window.firebaseServices;
-                
-                // Ensure reCAPTCHA is rendered and ready
-                if (!recaptchaVerifier) {
-                    console.log("Initializing reCAPTCHA...");
-                    initializeRecaptcha();
-                    // Wait a bit for reCAPTCHA to initialize
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                // Use Fast2SMS handler to send OTP
+                const success = await fast2smsHandler.sendOTP(validatedNumber, {
+                    type: 'payment_verification',
+                    context: 'checkout'
+                });
+
+                if (success) {
+                    updatePhoneStatus(`OTP sent to +91${validatedNumber}. Check your messages.`, 'success');
+                    document.getElementById('otp-container').style.display = 'block';
+                    sendOtpBtn.innerHTML = '<i class="fa-solid fa-check"></i> OTP Sent';
+                    
+                    // Focus on OTP input
+                    setTimeout(() => {
+                        document.getElementById('otp-code').focus();
+                    }, 100);
+                } else {
+                    throw new Error('Failed to send OTP');
                 }
 
-                console.log("Attempting to send OTP to:", phoneNumber);
-                window.confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-                
-                updatePhoneStatus(`OTP sent to ${phoneNumber}. Enter it below.`, 'success');
-                document.getElementById('otp-container').style.display = 'block';
-                sendOtpBtn.innerHTML = '<i class="fa-solid fa-check"></i> OTP Sent';
-                // Keep sendOtpBtn disabled until OTP is verified or user wants to resend.
-                // For resend, you might need another button or logic to re-enable sendOtpBtn.
             } catch (error) {
                 console.error('Error sending OTP:', error);
-                let errorMessage = 'Failed to send OTP. Please try again.';
-                if (error.code === 'auth/too-many-requests') {
-                    errorMessage = 'Too many requests. Please try again later.';
-                } else if (error.code === 'auth/invalid-phone-number') {
-                    errorMessage = 'Invalid phone number format.';
-                } else if (error.message.includes("reCAPTCHA placeholder element")) {
-                    errorMessage = "reCAPTCHA not ready. Please wait a moment and try again.";
-                } else if (error.code === 'auth/app-not-authorized') {
-                    errorMessage = "App not authorized. Please contact support.";                }
-                updatePhoneStatus(errorMessage, 'error');
+                updatePhoneStatus(error.message || 'Failed to send OTP. Please try again.', 'error');
                 sendOtpBtn.disabled = false;
                 sendOtpBtn.innerHTML = '<i class="fa-solid fa-shield-alt"></i> Send OTP';
             }
-        }
-
-        async function verifyOTP() {
+        }        async function verifyOTP() {
             const otpInput = document.getElementById('otp-code');
             const verifyOtpBtn = document.getElementById('verify-otp-btn');
             const otpCode = otpInput.value.trim();
@@ -1145,37 +1153,35 @@
             }
             otpInput.style.borderColor = '';
 
-            if (!window.confirmationResult) {
-                updatePhoneStatus('Please send OTP first.', 'error');
-                return;
-            }
-
             verifyOtpBtn.disabled = true;
             verifyOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
 
             try {
-                await window.confirmationResult.confirm(otpCode);
-                window.isPhoneVerified = true;
-                updatePhoneStatus('Phone number verified successfully!', 'success');
-                verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verified';
-                document.getElementById('send-otp-btn').disabled = true; // Disable send OTP after successful verification
-                document.getElementById('phone').disabled = true; // Disable phone input
-                document.getElementById('otp-code').disabled = true; // Disable OTP input
-                 // Automatically attempt to place order if form is otherwise valid
-                if (validateForm(false)) { // Validate without showing OTP specific errors again
-                    processOrder();
+                // Use Fast2SMS handler to verify OTP
+                const success = await fast2smsHandler.verifyOTP(otpCode);
+
+                if (success) {
+                    window.isPhoneVerified = true;
+                    updatePhoneStatus('Phone number verified successfully!', 'success');
+                    verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verified';
+                    
+                    // Disable inputs after successful verification
+                    document.getElementById('send-otp-btn').disabled = true;
+                    document.getElementById('phone').disabled = true;
+                    document.getElementById('otp-code').disabled = true;
+                    
+                    // Automatically attempt to place order if form is otherwise valid
+                    if (validateForm(false)) {
+                        processOrder();
+                    }
+                } else {
+                    throw new Error('Invalid OTP');
                 }
 
             } catch (error) {
                 console.error('Error verifying OTP:', error);
                 window.isPhoneVerified = false;
-                let errorMessage = 'Invalid OTP. Please try again.';
-                if (error.code === 'auth/invalid-verification-code') {
-                    errorMessage = 'Invalid OTP. Please check the code and try again.';
-                } else if (error.code === 'auth/code-expired') {
-                    errorMessage = 'OTP has expired. Please send a new one.';
-                }
-                updatePhoneStatus(errorMessage, 'error');
+                updatePhoneStatus(error.message || 'Invalid OTP. Please try again.', 'error');
                 verifyOtpBtn.disabled = false;
                 verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify OTP';
             }
@@ -1273,7 +1279,6 @@
             }
         }        function setupPaymentMethods() {
             const paymentMethods = document.querySelectorAll('.payment-method');
-            const qrSection = document.getElementById('qr-payment-section');
             
             paymentMethods.forEach(method => {
                 method.addEventListener('click', function() {
@@ -1287,13 +1292,9 @@
                     const radio = this.querySelector('input[type="radio"]');
                     radio.checked = true;
                     
-                    // Show/hide QR code section
-                    const selectedMethod = radio.value;
-                    if (selectedMethod === 'upi-qr') {
-                        qrSection.style.display = 'block';
-                    } else {
-                        qrSection.style.display = 'none';
-                    }
+                    // Show/hide payment method details
+                    const methodType = this.dataset.method;
+                    togglePaymentDetails(methodType);
                 });
             });
 
@@ -1304,10 +1305,17 @@
             }
         }
         
-        function showPaymentDetails(method) {
-            // Simplified payment methods - no additional details needed
-            // Both COD and Razorpay handle their own processes
-        }        
+        function togglePaymentDetails(methodType) {
+            // Hide all payment details
+            const allDetails = document.querySelectorAll('.payment-details');
+            allDetails.forEach(detail => detail.style.display = 'none');
+            
+            // Show selected payment method details
+            const selectedDetails = document.getElementById(`${methodType}-details`);
+            if (selectedDetails) {
+                selectedDetails.style.display = 'block';
+            }
+        }
         
         function setupFormValidation() {
             const form = document.getElementById('payment-form');
@@ -1379,7 +1387,7 @@
                 isValid = false;            }
             
             // No additional validation needed for simplified payment methods
-            // COD requires no additional info, Razorpay handles its own validation
+            // COD requires no additional validation
             
             if (!isValid && checkOtp) { // Only show general error if checkOtp is true
                 showError('Please fill in all required fields correctly.');
@@ -1417,85 +1425,47 @@
 
             // Proceed with order processing
             completeOrderProcessing(placeOrderBtn, selectedPaymentMethod);
-        }          function completeOrderProcessing(placeOrderBtn, selectedPaymentMethod) {
+        }        function completeOrderProcessing(placeOrderBtn, selectedPaymentMethod) {
             // Handle different payment methods
-            if (selectedPaymentMethod === 'upi-qr') {
-                processQRPayment(placeOrderBtn);
-            } else if (selectedPaymentMethod === 'cod') {
+            if (selectedPaymentMethod === 'cod') {
                 processCODOrder(placeOrderBtn);
+            } else if (selectedPaymentMethod === 'razorpay') {
+                processRazorpayOrder(placeOrderBtn);
             } else {
                 // For other payment methods not yet implemented
-                showError('This payment method is not available yet. Please use Cash on Delivery or UPI QR Code.');
+                showError('This payment method is not available yet. Please use another option.');
                 placeOrderBtn.classList.remove('btn-loading');
                 placeOrderBtn.disabled = false;
             }
         }
 
-        function processQRPayment(placeOrderBtn) {
-            const cart = getCart();
-            const total = calculateTotal();
+        function processRazorpayOrder(placeOrderBtn) {
+            // Show loading state
+            placeOrderBtn.classList.add('btn-loading');
+            placeOrderBtn.disabled = true;
             
-            // Create order data
+            // Prepare order data
             const orderData = {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                pincode: document.getElementById('pincode').value,
-                landmark: document.getElementById('landmark').value,
-                instructions: document.getElementById('instructions').value,
-                paymentMethod: 'upi-qr',
-                items: cart,
-                total: total,
-                paymentStatus: 'pending' // Will be marked as paid after manual confirmation
+                customerInfo: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    isPhoneVerified: window.isPhoneVerified
+                },
+                shippingAddress: {
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    pincode: document.getElementById('pincode').value,
+                    landmark: document.getElementById('landmark').value
+                },
+                instructions: document.getElementById('instructions').value
             };
             
-            // Show confirmation dialog
-            const confirmation = confirm(
-                `Please confirm that you have completed the UPI payment of ₹${total.toFixed(2)} using the QR code.\n\n` +
-                `Click OK only after the payment is successful.`
-            );
-            
-            if (confirmation) {
-                // User confirmed payment
-                handleQRPaymentSuccess(orderData, placeOrderBtn);
-            } else {
-                // User cancelled
-                placeOrderBtn.classList.remove('btn-loading');
-                placeOrderBtn.disabled = false;
-                showError('Payment confirmation cancelled. Please complete the payment and try again.');
-            }
+            // Initialize Razorpay payment
+            window.aadyaPaymentHandler.initiatePayment(orderData);
         }
-
-        function handleQRPaymentSuccess(orderData, placeOrderBtn) {
-            // Mark payment as completed (in real scenario, you'd verify this with payment provider)
-            orderData.paymentStatus = 'paid';
-            
-            // Generate order ID
-            const orderId = generateOrderId();
-            orderData.orderId = orderId;
-            orderData.orderDate = new Date().toISOString();
-            
-            // Save order to localStorage (in real app, save to backend)
-            saveOrder(orderData);
-            
-            // Clear cart
-            localStorage.removeItem('aadya_cart');
-            localStorage.removeItem('aadya_pending_order');
-            localStorage.removeItem('aadya_applied_coupon');
-            
-            // Show success message
-            showSuccess('Payment confirmed! Redirecting to confirmation page...');
-            
-            // Redirect to confirmation page
-            setTimeout(() => {
-                window.location.href = `order-confirmation.html?orderId=${orderId}`;
-            }, 2000);
-        }
-
         function processCODOrder(placeOrderBtn) {
             // Show loading state
             placeOrderBtn.classList.add('btn-loading');
@@ -1827,9 +1797,7 @@
             }
         });
 
-        // ...existing code...
-    </script>    <!-- reCAPTCHA Container -->
-    <div id="recaptcha-container" style="margin: 20px 0; display: flex; justify-content: center;"></div>
+        // ...existing code...    </script>
 
     <!-- Admin Access Modal -->
     <div class="admin-modal-overlay" id="adminModal">
