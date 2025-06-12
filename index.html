@@ -631,26 +631,46 @@
         /* PRODUCT GRID */
         .products {
             padding: 80px 0;
-        }
-
-        .product-grid {
+        }        .product-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 35px;
+            padding: 20px 0;
         }        .product-card {
             background: var(--bg-color);
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            cursor: pointer; /* Pointer cursor indicates clickable */
-            position: relative; /* Needed for hover effect */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(255, 182, 193, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 127, 80, 0.15);
+            border-color: rgba(255, 127, 80, 0.2);
+        }
+        
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 127, 80, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .product-card:hover::before {
+            opacity: 1;
         }
         
         /* Highlight animation for search results */
@@ -676,57 +696,194 @@
             box-shadow: 0 8px 25px rgba(204, 139, 101, 0.15); /* Copper shadow */
         }        .product-image-container {
             position: relative;
-            height: 300px; /* Fixed height for consistency */
-            overflow: hidden; /* Hide overflow */
+            height: 320px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffeef1, #fff5f7);
         }
         
         .product-image-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Maintain aspect ratio and cover container */
-            object-position: center; /* Center the image */
-            transition: transform 0.3s ease;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 0;
         }
         
         .product-card:hover .product-image-container img {
-            transform: scale(1.05); /* Subtle zoom effect on hover */
+            transform: scale(1.08);
+        }
+        
+        /* Add a subtle overlay gradient */
+        .product-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.12));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .product-card:hover .product-image-container::after {
+            opacity: 1;
         }
         
         .product-image-container .btn-add-to-cart {
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(10px);
             opacity: 0;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-            background-color: var(--accent-coral);
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 600;
-            z-index: 2; /* Ensure it's above the image */
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .product-image-container .btn-add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .product-image-container .btn-add-to-cart:hover::before {
+            left: 100%;
+        }
+        
+        .product-image-container .btn-add-to-cart:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
         }
         
         .product-card:hover .btn-add-to-cart {
             opacity: 1;
-            bottom: 30px;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
         }
-
-        .product-info {
-            padding: 20px;
+        
+        /* Badge for new/featured products */
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 5;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }        .product-info {
+            padding: 25px;
+            background: var(--bg-color);
+            position: relative;
+            z-index: 2;
         }
 
         .product-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-charcoal);
+            line-height: 1.4;
+            font-family: var(--font-heading);
+        }
+          .product-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .product-price {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--accent-coral);
+            margin-bottom: 8px;
+            font-family: var(--font-heading);
+        }
+        
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .stars {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+        
+        .rating-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .product-category {
+            background: linear-gradient(135deg, rgba(255, 127, 80, 0.1), rgba(255, 182, 193, 0.1));
+            color: var(--accent-coral);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .quick-view-btn {
+            background: transparent;
+            border: 2px solid var(--accent-coral);
+            color: var(--accent-coral);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-view-btn:hover {
+            background: var(--accent-coral);
+            color: white;
+            transform: translateY(-1px);
         }
 
         /* OFFERS SECTION */
@@ -1174,8 +1331,7 @@
             color: #ccc;
         }
 
-        /* RESPONSIVE DESIGN */
-        @media (max-width: 992px) {
+        /* RESPONSIVE DESIGN */        @media (max-width: 992px) {
             .nav-links {
                 position: fixed;
                 top: 112px; /* Adjust based on top bar + header height */
@@ -1208,7 +1364,29 @@
             .hero-slide .hero-text { order: 2; text-align: center; padding: 10px 0; max-width: 100%; }
             .hero-slide .hero-image { order: 1; margin-bottom: 10px; max-width: 100%; }
             .hero-slide .hero-buttons { justify-content: center; gap: 10px; }
-            .hero-image img { max-height: 350px; object-fit: contain; }            .product-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-image img { max-height: 350px; object-fit: contain; }            
+            /* Professional product cards for tablet */
+            .product-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 25px;
+            }
+            .product-image-container {
+                height: 280px;
+            }
+            .product-info {
+                padding: 20px;
+            }
+            .product-info h3 {
+                font-size: 1.2rem;
+            }
+            .product-description {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+            .product-card:hover {
+                transform: translateY(-8px) scale(1.01);
+            }
+            
             .category-grid { grid-template-columns: repeat(2, 1fr); }
             .features-grid { grid-template-columns: 1fr; }
             .testimonial-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -1224,24 +1402,101 @@
             .about-image { order: 1; margin-bottom: 30px; }
             .newsletter-form { flex-direction: column; align-items: center; }
             .newsletter-form input { width: 100%; max-width: 300px; }
-        }        @media (max-width: 576px) {
+            
+            /* Mobile product cards */
             .product-grid { 
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                grid-template-columns: 1fr; 
+                gap: 20px;
+                padding: 0 10px;
             }
             .product-card {
-                border-radius: 10px;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .product-image-container {
+                height: 300px;
+            }
+            .product-meta {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .quick-view-btn {
+                width: 100%;
+                text-align: center;
+            }
+            /* Always show add to cart button on mobile */
+            .product-image-container .btn-add-to-cart {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-50%) translateY(0);
+                bottom: 15px;
+                font-size: 0.85rem;
+                padding: 10px 20px;
+            }
+        }        
+        @media (max-width: 576px) {
+            /* Compact mobile layout */
+            .product-grid { 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .product-card {
+                max-width: none;
+            }
+            .product-image-container {
+                height: 220px;
             }
             .product-info {
-                padding: 10px;
+                padding: 15px;
             }
             .product-info h3 {
-                font-size: 0.9rem;
-                margin-bottom: 5px;
+                font-size: 1rem;
+                margin-bottom: 6px;
+                line-height: 1.2;
+            }
+            .product-description {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+                -webkit-line-clamp: 1;
+                line-clamp: 1;
             }
             .product-price {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
+                margin-bottom: 6px;
             }
+            .product-rating {
+                margin-bottom: 6px;
+            }
+            .stars {
+                font-size: 0.8rem;
+            }
+            .rating-text {
+                font-size: 0.75rem;
+            }
+            .product-meta {
+                margin-top: 10px;
+                padding-top: 10px;
+            }
+            .product-category {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+            .quick-view-btn {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+            .product-image-container .btn-add-to-cart {
+                font-size: 0.75rem;
+                padding: 8px 16px;
+            }
+            .product-badge {
+                font-size: 0.65rem;
+                padding: 4px 8px;
+                top: 8px;
+                right: 8px;
+            }
+            
             .testimonial-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
@@ -1526,71 +1781,186 @@
         <section class="products" id="shop">
             <div class="container">
                 <h2 class="section-title">Our Bestsellers</h2>
-                <div class="product-grid" id="productGrid">                    <!-- Products will be loaded here from localStorage -->
+                <div class="product-grid" id="productGrid">
+                    <!-- Products will be loaded here from localStorage -->
                     <!-- Default Product 1 -->
                     <div class="product-card" data-product-id="kurti_001">
                         <div class="product-image-container">
+                            <div class="product-badge">Best Seller</div>
                             <img src="https://placehold.co/400x500/F8C8DC/36454F?text=Kurti+Style+1" alt="Pastel Pink Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                            <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Pastel Pink Cotton Kurti</h3>
+                            <p class="product-description">Elegant cotton kurti perfect for daily wear and casual occasions</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-text">(24 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Daily Wear</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Product 2 -->
                     <div class="product-card" data-product-id="kurti_002">
-                         <div class="product-image-container">
+                        <div class="product-image-container">
+                            <div class="product-badge">Popular</div>
                             <img src="https://placehold.co/400x500/FFDAB9/36454F?text=Kurti+Style+2" alt="Peach Floral Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Peach Floral Kurti</h3>
+                            <p class="product-description">Beautiful floral patterns with comfortable peach fabric</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-text">(18 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Floral</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Product 3 -->
                     <div class="product-card" data-product-id="kurti_003">
-                         <div class="product-image-container">
+                        <div class="product-image-container">
+                            <div class="product-badge">Classic</div>
                             <img src="https://placehold.co/400x500/FFFFFF/36454F?text=Kurti+Style+3" alt="Classic White Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Classic White Kurti</h3>
+                            <p class="product-description">Timeless white kurti suitable for all occasions</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-text">(31 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Classic</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Product 4 -->
                     <div class="product-card" data-product-id="kurti_004">
-                         <div class="product-image-container">
+                        <div class="product-image-container">
+                            <div class="product-badge">Trending</div>
                             <img src="https://placehold.co/400x500/B2DFDB/36454F?text=Kurti+Style+4" alt="Sea Green Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Sea Green Daily Wear Kurti</h3>
+                            <p class="product-description">Refreshing sea green color perfect for everyday comfort</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-text">(15 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Daily Wear</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Product 5 -->
                     <div class="product-card" data-product-id="kurti_005">
-                         <div class="product-image-container">
+                        <div class="product-image-container">
+                            <div class="product-badge">Party</div>
                             <img src="https://placehold.co/400x500/FFCCBC/36454F?text=Kurti+Style+5" alt="Coral Print Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Coral Print Party Kurti</h3>
+                            <p class="product-description">Stunning coral prints ideal for parties and celebrations</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-text">(27 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Party Wear</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Product 6 -->
                     <div class="product-card" data-product-id="kurti_006">
-                         <div class="product-image-container">
+                        <div class="product-image-container">
+                            <div class="product-badge">Elegant</div>
                             <img src="https://placehold.co/400x500/D1C4E9/36454F?text=Kurti+Style+6" alt="Lavender Long Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
-                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
+                            <a href="#" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                Add to Cart
+                            </a>
                         </div>
                         <div class="product-info">
                             <h3>Lavender Long Kurti</h3>
+                            <p class="product-description">Graceful long kurti in soothing lavender shade</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-text">(22 reviews)</span>
+                            </div>
                             <p class="product-price">₹300</p>
+                            <div class="product-meta">
+                                <span class="product-category">Long Kurti</span>
+                                <button class="quick-view-btn">Quick View</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1979,15 +2349,28 @@
             productCard.className = 'product-card';
             productCard.dataset.productId = product.productId || product.id;
             productCard.style.cursor = 'pointer';
-            
-            // Add click handler for product details modal
+              // Add click handler for product details page
             productCard.addEventListener('click', function(e) {
-                // Don't trigger modal if Add to Cart button was clicked
+                // Don't trigger navigation if Add to Cart button was clicked
                 if (e.target.classList.contains('btn-add-to-cart') || e.target.closest('.btn-add-to-cart')) {
                     e.stopPropagation();
                     return;
                 }
-                openProductModal(product);
+                
+                // Redirect to product detail page with product data
+                const productParams = new URLSearchParams({
+                    id: product.productId || product.id,
+                    name: product.name || 'Kurti',
+                    price: product.price || '899',
+                    image: product.images?.[0] || product.primaryImage || product.imageUrl || 'https://placehold.co/400x500/F4C2C2/2D2D2D?text=Kurti',
+                    category: product.category || 'Daily Wear',
+                    fabric: product.fabric || 'Cotton Blend',
+                    description: product.description || 'Beautiful kurti perfect for daily wear and special occasions',
+                    stock: product.stock || 'In Stock',
+                    discount: product.discount || '0'
+                });
+                
+                window.location.href = `product-detail.html?${productParams.toString()}`;
             });
             
             // Create image container
@@ -2106,7 +2489,7 @@
             // Add view details hint
             const viewDetailsHint = document.createElement('p');
             viewDetailsHint.className = 'view-details-hint';
-            viewDetailsHint.textContent = '👆 Click to view details';
+            // viewDetailsHint.textContent = '👆 Click to view details';
             viewDetailsHint.style.cssText = 'font-size: 11px; color: #999; margin: 5px 0 0 0; text-align: center; opacity: 0.7;';
             
             // Assemble the elements
@@ -2924,10 +3307,8 @@
                 }
                 
                 // Mark this card as initialized to avoid duplicate handlers
-                card.setAttribute('data-modal-initialized', 'true');
-                
-                card.addEventListener('click', function(e) {
-                    // Don't trigger modal if the Add to Cart button was clicked
+                card.setAttribute('data-modal-initialized', 'true');                  card.addEventListener('click', function(e) {
+                    // Don't trigger navigation if the Add to Cart button was clicked
                     if (e.target.classList.contains('btn-add-to-cart') || e.target.closest('.btn-add-to-cart')) {
                         return;
                     }
@@ -2941,92 +3322,24 @@
                     // Additional details - try to get from localStorage or use defaults
                     let productData = getProductDataFromStorage(productId);
                     
-                    // Populate the modal with product details
-                    document.getElementById('productModalTitle').textContent = productName;
-                    document.getElementById('productModalPrice').textContent = productPrice;
-                    document.getElementById('productModalMainImg').src = productImageSrc;
-                    
-                    // Set description based on available data or use a default
-                    const description = productData?.description || 
-                        'This beautiful kurti is designed for comfort and style. Perfect for daily wear and special occasions.';
-                    document.getElementById('productModalDescription').textContent = description;
-                    
-                    // Set category
-                    document.getElementById('productModalCategory').textContent = 
-                        productData?.category || (productName.includes('Party') ? 'Party Wear' : 'Daily Wear');
-                    
-                    // Set fabric details
-                    document.getElementById('productModalFabric').textContent = 
-                        productData?.fabric || 'Cotton Blend';
-                    
-                    // Set stock
-                    document.getElementById('productModalStock').textContent = 
-                        productData?.stock || 'In Stock';
-                    
-                    // Clear existing thumbnails and add the main image
-                    const thumbnailsContainer = document.getElementById('productModalThumbnails');
-                    thumbnailsContainer.innerHTML = '';
-                    
-                    // Add main image as first thumbnail and mark it as active
-                    const mainThumbnail = document.createElement('img');
-                    mainThumbnail.src = productImageSrc;
-                    mainThumbnail.alt = productName;
-                    mainThumbnail.className = 'product-modal-thumbnail active';
-                    mainThumbnail.onclick = function() {
-                        setActiveImage(this);
+                    // Create product object with all necessary data
+                    const productDetails = {
+                        id: productId,
+                        name: productName,
+                        price: productPrice.replace('₹', ''),
+                        image: productImageSrc,
+                        category: productData?.category || (productName.includes('Party') ? 'Party Wear' : 'Daily Wear'),
+                        fabric: productData?.fabric || 'Cotton Blend',
+                        description: productData?.description || 'This beautiful kurti is designed for comfort and style. Perfect for daily wear and special occasions.',
+                        stock: productData?.stock || 'In Stock',
+                        discount: productData?.discount || '0'
                     };
-                    thumbnailsContainer.appendChild(mainThumbnail);
                     
-                    // Add extra thumbnails if available
-                    if (productData && productData.images && productData.images.length > 1) {
-                        productData.images.slice(1).forEach(imgSrc => {
-                            const thumbnail = document.createElement('img');
-                            thumbnail.src = imgSrc;
-                            thumbnail.alt = productName;
-                            thumbnail.className = 'product-modal-thumbnail';
-                            thumbnail.onclick = function() {
-                                setActiveImage(this);
-                            };
-                            thumbnailsContainer.appendChild(thumbnail);
-                        });
-                    } else {
-                        // Add placeholder thumbnails if no extra images
-                        for (let i = 0; i < 2; i++) {
-                            const colorVariation = i === 0 ? 'light' : 'dark';
-                            const thumbnail = document.createElement('img');
-                            thumbnail.src = productImageSrc.replace(/\/[^/]*$/, `/alternative_${colorVariation}_${productId}.jpg`);
-                            thumbnail.alt = `${productName} - Color Variation`;
-                            thumbnail.className = 'product-modal-thumbnail';
-                            thumbnail.onerror = function() { 
-                                this.src = productImageSrc;
-                                this.onerror = null;
-                            };
-                            thumbnail.onclick = function() {
-                                setActiveImage(this);
-                            };
-                            thumbnailsContainer.appendChild(thumbnail);
-                        }
-                    }
+                    // Store product details in localStorage with product-specific key
+                    localStorage.setItem(`product_detail_${productId}`, JSON.stringify(productDetails));
                     
-                    // Setup colors
-                    setupProductColors(productData);
-                    
-                    // Setup sizes
-                    setupProductSizes(productData);
-                    
-                    // Reset quantity
-                    document.getElementById('productModalQuantity').value = 1;
-                    
-                    // Setup add to cart button
-                    setupModalAddToCartButton(productId, productName, productPrice, productImageSrc);
-                      // Setup add to slider button
-                    setupAddToSliderButton(productId, productName, productPrice, productImageSrc);
-                    
-                    // Track product view analytics
-                    updateProductAnalytics(productId, 'view');
-                    
-                    // Show the modal
-                    productModalOverlay.classList.add('show');
+                    // Redirect to product detail page with only the product ID
+                    window.location.href = `product-detail.html?id=${productId}`;
                 });
             });
             
