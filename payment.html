@@ -12,15 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">    <!-- Cart Functionality Script -->
     <script src="aadya-cart.js"></script>
 
-    <!-- Razorpay SDK -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
-    <!-- Razorpay Configuration -->
-    <script src="razorpay-config.js"></script>    <!-- Firebase v8 SDK (more stable for phone auth) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-
     <style>
         :root {
             --primary-peach: #FFDAB9;
@@ -238,10 +229,8 @@
             background-color: var(--neutral-white);
             border-radius: 15px;        
             padding: 30px;
-            box-shadow: var(--shadow);
-        }
+            box-shadow: var(--shadow);        }
 
-        /* Firebase OTP Verification Section */
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -605,68 +594,10 @@
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
-        }
-
-        .alert.error {
+        }        .alert.error {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
-        }
-
-        /* Custom styles for OTP section */
-        #phone-input-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #phone-input-group input[type="tel"] {
-            flex-grow: 1; /* Allow phone input to take available space */
-        }
-
-        #send-otp-btn, #verify-otp-btn {
-            background: linear-gradient(135deg, var(--accent-coral), #FF6B47);
-            color: var(--neutral-white);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        #phone-status {
-            margin-top: 5px;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            background: #f8f9fa;
-            font-size: 0.9rem;
-        }
-
-        #phone-status.success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-
-        #phone-status.error {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-
-        #otp-container {
-            margin-top: 15px; /* Add some space above OTP input */
-        }
-
-        #otp-input-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #otp-input-group input[type="text"] {
-            flex-grow: 1;
         }
 
         /* Admin Modal Styles */
@@ -761,45 +692,10 @@
             transform: translateY(-2px);
         }
 
-        /* Shake animation for admin modal */
-        @keyframes shake {
+        /* Shake animation for admin modal */        @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-        }        /* Firebase OTP Verification Styles */
-        #recaptcha-container-new {
-            min-height: 78px; /* Standard reCAPTCHA height */
-            margin: 20px 0;
-            border: 2px dashed #007bff;
-            border-radius: 8px;
-            padding: 10px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
-        #recaptcha-container-new.loading {
-            background: #fff3cd;
-            border-color: #ffc107;
-        }
-        
-        #recaptcha-container-new.error {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
-        
-        #recaptcha-container-new.success {
-            background: #d4edda;
-            border-color: #28a745;
-        }
-
-        #firebase-phone-status.success, #firebase-otp-status.success {
-            color: #28a745; 
-        }
-        #firebase-phone-status.error, #firebase-otp-status.error {
-            color: #dc3545;
         }
     </style>
 </head>
@@ -887,26 +783,7 @@
                                     <input type="email" id="email" name="email" required>
                                 </div>                                <div class="form-group">
                                     <label for="phone">Phone Number *</label>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit Indian mobile number" pattern="^\+91[0-9]{10}$" value="+91" inputmode="tel" required style="flex: 1;">
-                                        <button type="button" id="send-otp-btn" onclick="sendOTP()" 
-                                                class="btn" style="background: linear-gradient(135deg, var(--accent-coral), #FF6B47); color: var(--text-charcoal);">
-                                            <i class="fa-solid fa-shield-alt"></i> Send OTP
-                                        </button>
-                                    </div>
-                                    <div id="phone-status" style="margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; background: #f8f9fa;">
-                                        <small><i class="fa-solid fa-info-circle"></i> We'll send an OTP to verify your phone number.</small>
-                                    </div>
-                                </div>                                <!-- OTP Verification Section (Initially Hidden) -->
-                                <div class="form-group full-width" id="otp-container" style="display: none;">
-                                    <label for="otp-code">Enter OTP *</label>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <input type="text" id="otp-code" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" style="flex: 1;">
-                                        <button type="button" id="verify-otp-btn" onclick="verifyOTP()"
-                                                class="btn" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">
-                                            <i class="fa-solid fa-check-circle"></i> Verify OTP
-                                        </button>
-                                    </div>
+                                    <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit Indian mobile number" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
@@ -961,15 +838,6 @@
                                 <i class="fa-solid fa-credit-card"></i>
                                 Payment Method
                             </h2>                            <div class="payment-methods">
-                                <div class="payment-method" data-method="razorpay">
-                                    <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
-                                    <i class="fa-solid fa-credit-card"></i>
-                                    <div>
-                                        <label for="razorpay">Online Payment</label>
-                                        <small>UPI, Cards, Net Banking, Wallets</small>
-                                    </div>
-                                </div>
-                                
                                 <div class="payment-method selected" data-method="cod">
                                     <input type="radio" name="paymentMethod" value="cod" id="cod" checked>
                                     <i class="fa-solid fa-money-bills"></i>
@@ -978,75 +846,7 @@
                                         <small>Pay when your order is delivered</small>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Payment Method Details -->
-                            <div id="razorpay-details" class="payment-details" style="display: none;">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-top: 15px;">
-                                    <h4 style="margin: 0 0 15px 0; display: flex; align-items: center;">
-                                        <i class="fa-solid fa-shield-halved" style="margin-right: 10px;"></i>
-                                        Secure Online Payment
-                                    </h4>
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin: 15px 0;">
-                                        <div style="text-align: center;">
-                                            <i class="fa-brands fa-cc-visa" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Visa Cards</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Mastercard</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-university" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Net Banking</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-mobile-alt" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">UPI</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-wallet" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Wallets</p>
-                                        </div>
-                                    </div>
-                                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 15px;">
-                                        <p style="margin: 0; font-size: 0.85rem; display: flex; align-items: center;">
-                                            <i class="fa-solid fa-lock" style="margin-right: 8px;"></i>
-                                            256-bit SSL encryption • PCI DSS compliant • Instant payment confirmation
-                                        </p>
-                                    </div>
-                                </div>
                             </div>                        </div>
-
-                        <!-- Firebase Phone Verification Section -->
-                        <div class="form-section" id="firebase-auth-section">
-                            <h2 class="section-title">
-                                <i class="fa-solid fa-shield-alt"></i>
-                                Verify Your Phone Number
-                            </h2>                            <div class="form-group full-width">
-                                <label for="firebase-phone-input">Phone Number</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="tel" id="firebase-phone-input" name="firebase-phone-input" placeholder="Enter 10-digit mobile number" required>
-                                    <button type="button" id="firebase-send-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Send OTP</button>
-                                </div>                                  <!-- Firebase reCAPTCHA container with proper styling -->
-                                <div id="recaptcha-container-auto" style="margin: 15px 0; min-height: 78px; border: 2px dashed #ddd; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
-                                    <div style="text-align: center; color: #666;">
-                                        <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>
-                                        Loading reCAPTCHA...
-                                    </div>
-                                </div>
-                                
-                                <small id="firebase-phone-status-new" style="margin-top: 10px; display: block;">Enter your phone number and click Send OTP. Firebase will handle security automatically.</small>
-                            </div>
-                            <div class="form-group full-width" id="firebase-otp-input-container" style="display: none;">
-                                <label for="firebase-otp-input">Enter OTP</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="text" id="firebase-otp-input" name="firebase-otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
-                                    <button type="button" id="firebase-verify-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Verify OTP</button>
-                                </div>
-                                <small id="firebase-otp-status-new" style="margin-top: 10px; display: block;"></small>
-                            </div>
-                        </div>
 
                         <!-- Special Instructions -->
                         <div class="form-section">
@@ -1831,114 +1631,7 @@
             // Setup payment method selection
             setupPaymentMethods();
               // Setup form validation
-            setupFormValidation();
-        });        // Fast2SMS OTP Functions
-        async function sendOTP() {
-            const phoneInput = document.getElementById('phone');
-            const sendOtpBtn = document.getElementById('send-otp-btn');
-            let phoneNumber = phoneInput.value.trim();
-
-            // Clean and validate phone number
-            const cleanNumber = phoneNumber.replace(/\D/g, '');
-            
-            // Handle different phone number formats
-            let validatedNumber = '';
-            if (cleanNumber.length === 10 && /^[6-9]/.test(cleanNumber)) {
-                validatedNumber = cleanNumber;
-            } else if (cleanNumber.length === 12 && cleanNumber.startsWith('91')) {
-                validatedNumber = cleanNumber.substring(2);
-            } else {
-                updatePhoneStatus('Please enter a valid 10-digit Indian mobile number (e.g., 9876543210)', 'error');
-                phoneInput.style.borderColor = '#dc3545';
-                return;
-            }
-
-            // Update phone input with clean format
-            phoneInput.value = `+91${validatedNumber}`;
-            phoneInput.style.borderColor = '';
-
-            sendOtpBtn.disabled = true;
-            sendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-            updatePhoneStatus('Sending OTP...', 'info');
-
-            try {
-                // Use Fast2SMS handler to send OTP
-                const success = await fast2smsHandler.sendOTP(validatedNumber, {
-                    type: 'payment_verification',
-                    context: 'checkout'
-                });
-
-                if (success) {
-                    updatePhoneStatus(`OTP sent to +91${validatedNumber}. Check your messages.`, 'success');
-                    document.getElementById('otp-container').style.display = 'block';
-                    sendOtpBtn.innerHTML = '<i class="fa-solid fa-check"></i> OTP Sent';
-                    
-                    // Focus on OTP input
-                    setTimeout(() => {
-                        document.getElementById('otp-code').focus();
-                    }, 100);
-                } else {
-                    throw new Error('Failed to send OTP');
-                }
-
-            } catch (error) {
-                console.error('Error sending OTP:', error);
-                updatePhoneStatus(error.message || 'Failed to send OTP. Please try again.', 'error');
-                sendOtpBtn.disabled = false;
-                sendOtpBtn.innerHTML = '<i class="fa-solid fa-shield-alt"></i> Send OTP';
-            }
-        }        async function verifyOTP() {
-            const otpInput = document.getElementById('otp-code');
-            const verifyOtpBtn = document.getElementById('verify-otp-btn');
-            const otpCode = otpInput.value.trim();
-
-            if (otpCode.length !== 6 || !/^[0-9]{6}$/.test(otpCode)) {
-                updatePhoneStatus('Please enter a valid 6-digit OTP.', 'error');
-                otpInput.style.borderColor = '#dc3545';
-                return;
-            }
-            otpInput.style.borderColor = '';
-
-            verifyOtpBtn.disabled = true;
-            verifyOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-
-            try {
-                // Use Fast2SMS handler to verify OTP
-                const success = await fast2smsHandler.verifyOTP(otpCode);
-
-                if (success) {
-                    window.isPhoneVerified = true;
-                    updatePhoneStatus('Phone number verified successfully!', 'success');
-                    verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verified';
-                    
-                    // Disable inputs after successful verification
-                    document.getElementById('send-otp-btn').disabled = true;
-                    document.getElementById('phone').disabled = true;
-                    document.getElementById('otp-code').disabled = true;
-                    
-                    // Automatically attempt to place order if form is otherwise valid
-                    if (validateForm(false)) {
-                        processOrder();
-                    }
-                } else {
-                    throw new Error('Invalid OTP');
-                }
-
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                window.isPhoneVerified = false;
-                updatePhoneStatus(error.message || 'Invalid OTP. Please try again.', 'error');
-                verifyOtpBtn.disabled = false;
-                verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify OTP';
-            }
-        }
-
-        function updatePhoneStatus(message, type = 'info') {
-            const phoneStatus = document.getElementById('phone-status');
-            phoneStatus.innerHTML = `<small><i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}</small>`;
-            phoneStatus.className = `phone-status ${type}`; // Add class for styling
-        }
-
+            setupFormValidation();        });
 
         function setupCartIcon() {
             const cartIcon = document.getElementById('cart-icon');
@@ -2183,43 +1876,13 @@
             // Handle different payment methods
             if (selectedPaymentMethod === 'cod') {
                 processCODOrder(placeOrderBtn);
-            } else if (selectedPaymentMethod === 'razorpay') {
-                processRazorpayOrder(placeOrderBtn);
             } else {
                 // For other payment methods not yet implemented
                 showError('This payment method is not available yet. Please use another option.');
                 placeOrderBtn.classList.remove('btn-loading');
                 placeOrderBtn.disabled = false;
-            }
-        }
+            }        }
 
-        function processRazorpayOrder(placeOrderBtn) {
-            // Show loading state
-            placeOrderBtn.classList.add('btn-loading');
-            placeOrderBtn.disabled = true;
-            
-            // Prepare order data
-            const orderData = {
-                customerInfo: {
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    isPhoneVerified: window.isPhoneVerified
-                },
-                shippingAddress: {
-                    address: document.getElementById('address').value,
-                    city: document.getElementById('city').value,
-                    state: document.getElementById('state').value,
-                    pincode: document.getElementById('pincode').value,
-                    landmark: document.getElementById('landmark').value
-                },
-                instructions: document.getElementById('instructions').value
-            };
-            
-            // Initialize Razorpay payment
-            window.aadyaPaymentHandler.initiatePayment(orderData);
-        }
         function processCODOrder(placeOrderBtn) {
             // Show loading state
             placeOrderBtn.classList.add('btn-loading');
