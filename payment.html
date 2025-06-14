@@ -1208,9 +1208,8 @@
                     container.classList.add('error');
                     return;
                 }                // Use correct Firebase v9 RecaptchaVerifier constructor
-                // Syntax: new RecaptchaVerifier(auth, containerId, parameters)
+                // Syntax: new RecaptchaVerifier(containerId, parameters, auth)
                 window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier(
-                    window.firebaseAuth,
                     'recaptcha-container',
                     {
                         'size': 'normal',
@@ -1235,7 +1234,8 @@
                             container.classList.add('error');
                             if(sendOtpButton) sendOtpButton.disabled = true;
                         }
-                    }
+                    },
+                    window.firebaseAuth
                 );
 
                 window.recaptchaVerifier.render().then((widgetId) => {
