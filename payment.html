@@ -12,37 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">    <!-- Cart Functionality Script -->
     <script src="aadya-cart.js"></script>
 
-<<<<<<< HEAD
-=======
-    <!-- Razorpay SDK -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>    <!-- Razorpay Configuration -->
-    <script src="razorpay-config.js"></script>
-    
-    <!-- Firebase v9 SDK (modular) -->
-    <script type="module">
-        // Import Firebase v9 modules
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-        
-        // Initialize Firebase
-        const app = initializeApp(window.firebaseConfig);
-        const auth = getAuth(app);
-        
-        // Make Firebase services available globally
-        window.firebaseAuth = auth;
-        window.FirebaseRecaptchaVerifier = RecaptchaVerifier;
-        window.firebaseSignInWithPhoneNumber = signInWithPhoneNumber;
-        
-        console.log("Firebase v9 initialized successfully");
-        
-        // Dispatch custom event to signal Firebase is ready
-        window.dispatchEvent(new CustomEvent('firebaseReady'));
-    </script>
-    
-    <!-- Firebase Configuration -->
-    <script src="firebase-config.js"></script>
-
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
     <style>
         :root {
             --primary-peach: #FFDAB9;
@@ -262,10 +231,6 @@
             padding: 30px;
             box-shadow: var(--shadow);        }
 
-<<<<<<< HEAD
-=======
-        /* OTP Verification Section */
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -731,40 +696,6 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-<<<<<<< HEAD
-=======
-        }        /* OTP Verification Styles */        #recaptcha-container {
-            min-height: 78px; /* Standard reCAPTCHA height */
-            margin: 20px 0;
-            border: 2px dashed #007bff;
-            border-radius: 8px;
-            padding: 10px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
-        #recaptcha-container.loading {
-            background: #fff3cd;
-            border-color: #ffc107;
-        }
-        
-        #recaptcha-container.error {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
-        
-        #recaptcha-container.success {
-            background: #d4edda;
-            border-color: #28a745;
-        }#phone-status.success, #otp-status.success {
-            color: #28a745; 
-        }
-        #phone-status.error, #otp-status.error {
-            color: #dc3545;
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
         }
     </style>
 </head>
@@ -850,7 +781,8 @@
                                 <div class="form-group">
                                     <label for="email">Email Address *</label>
                                     <input type="email" id="email" name="email" required>
-                                </div>                                <div class="form-group">
+                                </div>
+                                <div class="form-group">
                                     <label for="phone">Phone Number *</label>
                                     <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit Indian mobile number" pattern="[0-9]{10}" required>
                                 </div>
@@ -901,12 +833,15 @@
                                     <input type="text" id="landmark" name="landmark" placeholder="Near...">
                                 </div>
                             </div>
-                        </div>                        <!-- Payment Method -->
+                        </div>
+
+                        <!-- Payment Method -->
                         <div class="form-section">
                             <h2 class="section-title">
                                 <i class="fa-solid fa-credit-card"></i>
                                 Payment Method
-                            </h2>                            <div class="payment-methods">
+                            </h2>
+                            <div class="payment-methods">
                                 <div class="payment-method selected" data-method="cod">
                                     <input type="radio" name="paymentMethod" value="cod" id="cod" checked>
                                     <i class="fa-solid fa-money-bills"></i>
@@ -915,82 +850,8 @@
                                         <small>Pay when your order is delivered</small>
                                     </div>
                                 </div>
-<<<<<<< HEAD
-                            </div>                        </div>
-=======
-                            </div>
-
-                            <!-- Payment Method Details -->
-                            <div id="razorpay-details" class="payment-details" style="display: none;">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-top: 15px;">
-                                    <h4 style="margin: 0 0 15px 0; display: flex; align-items: center;">
-                                        <i class="fa-solid fa-shield-halved" style="margin-right: 10px;"></i>
-                                        Secure Online Payment
-                                    </h4>
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin: 15px 0;">
-                                        <div style="text-align: center;">
-                                            <i class="fa-brands fa-cc-visa" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Visa Cards</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Mastercard</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-university" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Net Banking</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-mobile-alt" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">UPI</p>
-                                        </div>
-                                        <div style="text-align: center;">
-                                            <i class="fa-solid fa-wallet" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                                            <p style="margin: 0; font-size: 0.8rem;">Wallets</p>
-                                        </div>
-                                    </div>
-                                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 15px;">
-                                        <p style="margin: 0; font-size: 0.85rem; display: flex; align-items: center;">
-                                            <i class="fa-solid fa-lock" style="margin-right: 8px;"></i>
-                                            256-bit SSL encryption • PCI DSS compliant • Instant payment confirmation
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>                        </div>                        <!-- Phone Verification Section -->
-                        <div class="form-section" id="phone-auth-section">
-                            <h2 class="section-title">
-                                <i class="fa-solid fa-shield-alt"></i>
-                                Verify Your Phone Number
-                            </h2>
-                            
-                            <div class="form-group full-width">
-                                <label for="phone-input">Phone Number</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="tel" id="phone-input" name="phone-input" placeholder="Enter 10-digit mobile number" required>
-                                    <button type="button" id="send-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Send OTP</button>
-                                </div>
-                                
-                                <!-- reCAPTCHA container -->
-                                <div id="recaptcha-container" style="margin: 15px 0; min-height: 78px; border: 2px dashed #ddd; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
-                                    <div style="text-align: center; color: #666;">
-                                        <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>
-                                        Loading verification...
-                                    </div>
-                                </div>
-                                
-                                <small id="phone-status" style="margin-top: 10px; display: block;">Enter your phone number and click Send OTP for secure verification.</small>
-                            </div>
-                            
-                            <div class="form-group full-width" id="otp-input-container" style="display: none;">
-                                <label for="otp-input">Enter OTP</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="text" id="otp-input" name="otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
-                                    <button type="button" id="verify-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Verify OTP</button>
-                                </div>
-                                <small id="otp-status" style="margin-top: 10px; display: block;"></small>
                             </div>
                         </div>
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
 
                         <!-- Special Instructions -->
                         <div class="form-section">
@@ -1070,287 +931,12 @@
         <div class="navbar" style="justify-content: center;">
             <p>&copy; 2025 Aadya Fashions. All Rights Reserved.</p>
         </div>
-    </footer>      <script>          // Theme toggle functionality (remains the same)
-        // ...        /* Phone Verification Variables */
-        window.isPhoneVerified = false;
-        window.recaptchaVerifier = null;
-        window.recaptchaWidgetId = null;
-        
-        // Initialize Firebase reCAPTCHA verifier
-        function initializeRecaptcha() {
-            const container = document.getElementById('recaptcha-container');
-            if (!container) {
-                console.error('reCAPTCHA container not found');
-                return;
-            }
-            
-            container.innerHTML = '<div style="text-align: center; color: #666;"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Loading Firebase SDK...</div>';
-            updatePhoneStatus('Initializing phone verification system...', 'info');
-            
-            // Diagnostic check for Firebase and domain
-            if (window.location.protocol === 'file:') {
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle" style="margin-right: 8px;"></i>Phone auth requires HTTPS or localhost. File:// protocol not supported.</div>';
-                updatePhoneStatus('Error: Phone authentication requires a proper web server (not file:// protocol)', 'error');
-                return;
-            }
-            
-            // Wait for Firebase to be ready
-            if (window.firebaseAuth && window.FirebaseRecaptchaVerifier) {
-                setupRecaptcha();
-            } else {
-                window.addEventListener('firebaseReady', setupRecaptcha, { once: true });
-            }
-        }
-          function setupRecaptcha() {
-            console.log('Setting up reCAPTCHA...');
-            console.log('Firebase Auth available:', !!window.firebaseAuth);
-            console.log('RecaptchaVerifier available:', !!window.FirebaseRecaptchaVerifier);
-            console.log('Current domain:', window.location.origin);
-            
-            const container = document.getElementById('recaptcha-container');
-            const sendOtpButton = document.getElementById('send-otp-btn');
+    </footer>
 
-            if (!container) {
-                console.error('reCAPTCHA container not found for setup.');
-                updatePhoneStatus('Error: reCAPTCHA UI element missing.', 'error');
-                if(sendOtpButton) sendOtpButton.disabled = true;
-                return;
-            }
-
-            // Clear previous content and reset state
-            container.innerHTML = ''; 
-            container.classList.remove('loading', 'error', 'success');
-            updatePhoneStatus('Initializing reCAPTCHA...', 'info');
-            container.classList.add('loading');
-            if(sendOtpButton) sendOtpButton.disabled = true; // Disable button until reCAPTCHA is solved
-
-            try {
-                if (!window.firebaseAuth || !window.FirebaseRecaptchaVerifier) {
-                    console.error('Firebase Auth or RecaptchaVerifier not available.');
-                    updatePhoneStatus('Firebase components not ready. Try refreshing.', 'error');
-                    container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i>Firebase not ready. <button onclick="retryRecaptcha()">Retry Init</button></div>';
-                    container.classList.remove('loading');
-                    container.classList.add('error');
-                    return;
-                }                // Use correct Firebase v9 RecaptchaVerifier constructor
-                // Syntax: new RecaptchaVerifier(containerId, parameters, auth)
-                window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier(
-                    'recaptcha-container',
-                    {
-                        'size': 'normal',
-                        'callback': (response) => {
-                            console.log('reCAPTCHA solved:', response);
-                            updatePhoneStatus('reCAPTCHA verified. You can now send OTP.', 'success');
-                            container.classList.remove('loading', 'error');
-                            container.classList.add('success');
-                            if(sendOtpButton) sendOtpButton.disabled = false;
-                        },
-                        'expired-callback': () => {
-                            console.log('reCAPTCHA expired.');
-                            updatePhoneStatus('reCAPTCHA expired. Please solve it again.', 'error');
-                            container.classList.remove('success', 'loading');
-                            container.classList.add('error');
-                            if(sendOtpButton) sendOtpButton.disabled = true;
-                        },
-                        'error-callback': (error) => {
-                            console.error('reCAPTCHA error-callback:', error);
-                            updatePhoneStatus('reCAPTCHA process error. Please try again.', 'error');
-                            container.classList.remove('success', 'loading');
-                            container.classList.add('error');
-                            if(sendOtpButton) sendOtpButton.disabled = true;
-                        }
-                    },
-                    window.firebaseAuth
-                );
-
-                window.recaptchaVerifier.render().then((widgetId) => {
-                    console.log('reCAPTCHA rendered with widget ID:', widgetId);
-                    window.recaptchaWidgetId = widgetId;
-                    updatePhoneStatus('Please complete the reCAPTCHA to enable OTP sending.', 'info');
-                    container.classList.remove('loading', 'error');
-                    // Button remains disabled until 'callback' is triggered by user solving reCAPTCHA
-                }).catch((renderError) => {
-                    console.error('Error rendering reCAPTCHA:', renderError);
-                    updatePhoneStatus('Failed to render reCAPTCHA. Check console/network or try refreshing.', 'error');
-                    container.innerHTML = `<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i>reCAPTCHA failed to load. <button onclick="retryRecaptcha()">Retry</button></div>`;
-                    container.classList.remove('loading');
-                    container.classList.add('error');
-                    if(sendOtpButton) sendOtpButton.disabled = true;
-                });
-
-            } catch (initError) {
-                console.error('Error initializing FirebaseRecaptchaVerifier:', initError);
-                updatePhoneStatus('Error setting up phone verification. Try refreshing.', 'error');
-                container.innerHTML = `<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i>Phone verification setup failed. <button onclick="retryRecaptcha()">Retry</button></div>`;
-                container.classList.remove('loading');
-                container.classList.add('error');
-                if(sendOtpButton) sendOtpButton.disabled = true;
-            }
-        }
-        
-        function retryRecaptcha() {
-            console.log('Retrying reCAPTCHA setup...');
-            setupRecaptcha();
-        }        // Send OTP function - Firebase implementation with reCAPTCHA
-        function sendOTP() {
-            const phoneInput = document.getElementById('phone-input');
-            const sendBtn = document.getElementById('send-otp-btn');
-            
-            if (!phoneInput || !sendBtn) {
-                console.error('Required elements not found');
-                return;
-            }
-
-            let phoneNumber = phoneInput.value.trim();
-            
-            // Validate phone number format
-            if (!/^\d{10}$/.test(phoneNumber)) {
-                updatePhoneStatus('Please enter a valid 10-digit phone number', 'error');
-                phoneInput.focus();
-                return;
-            }
-            
-            const formattedPhone = '+91' + phoneNumber;
-            console.log('Sending OTP to:', formattedPhone);
-
-            // Check if reCAPTCHA is ready
-            if (!window.recaptchaVerifier) {
-                updatePhoneStatus('reCAPTCHA not initialized. Please wait or refresh the page.', 'error');
-                return;
-            }
-
-            // Update UI
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Sending...';
-            updatePhoneStatus('Sending OTP...', 'info');            // Use Firebase Auth to send OTP
-            window.firebaseSignInWithPhoneNumber(window.firebaseAuth, formattedPhone, window.recaptchaVerifier)
-                .then((confirmationResult) => {
-                    console.log('OTP sent successfully:', confirmationResult);
-                    window.confirmationResult = confirmationResult;
-                      updatePhoneStatus(`OTP sent to ${formattedPhone}`, 'success');
-                    document.getElementById('otp-input-container').style.display = 'block';
-                    document.getElementById('otp-input').focus();
-                    
-                    phoneInput.disabled = true;
-                    sendBtn.textContent = 'OTP Sent';
-                })
-                .catch((error) => {
-                    console.error('Failed to send OTP:', error);
-                    
-                    let errorMessage = 'Failed to send OTP';
-                    switch(error.code) {
-                        case 'auth/too-many-requests':
-                            errorMessage = 'Too many requests. Please wait and try again.';
-                            break;
-                        case 'auth/invalid-phone-number':
-                            errorMessage = 'Invalid phone number format';
-                            break;
-                        case 'auth/captcha-check-failed':
-                            errorMessage = 'reCAPTCHA verification failed. Please try again.';
-                            // Re-initialize reCAPTCHA on failure
-                            setTimeout(retryRecaptcha, 1000);
-                            break;
-                        case 'auth/phone-number-already-exists':
-                            errorMessage = 'This phone number is already registered.';
-                            break;
-                        case 'auth/operation-not-allowed':
-                            errorMessage = 'Phone authentication not enabled. Please check Firebase console.';
-                            break;
-                        case 'auth/quota-exceeded':
-                            errorMessage = 'SMS quota exceeded. Please try again later.';
-                            break;
-                        default:
-                            errorMessage = `Error: ${error.message}`;
-                    }
-                    
-                    updatePhoneStatus(errorMessage, 'error');
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = 'Send OTP';
-                });
-        }        // Verify OTP function - Firebase implementation
-        function verifyOTP() {
-            const otpInput = document.getElementById('otp-input');
-            const verifyBtn = document.getElementById('verify-otp-btn');
-            
-            if (!otpInput || !verifyBtn) {
-                console.error('Required elements not found');
-                return;
-            }
-
-            const otpCode = otpInput.value.trim();
-            if (!/^\d{6}$/.test(otpCode)) {
-                updateOtpStatus('Please enter a valid 6-digit OTP', 'error');
-                otpInput.focus();
-                return;
-            }
-
-            if (!window.confirmationResult) {
-                updateOtpStatus('No OTP session found. Please send OTP first.', 'error');
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = 'Verifying...';
-            updateOtpStatus('Verifying OTP...', 'info');
-
-            // Verify OTP using Firebase
-            window.confirmationResult.confirm(otpCode)
-                .then((result) => {
-                    console.log('OTP verified successfully:', result.user);
-                    
-                    updateOtpStatus('Phone verified successfully!', 'success');
-                    window.isPhoneVerified = true;
-                    
-                    otpInput.disabled = true;
-                    verifyBtn.textContent = 'Verified';
-                    document.getElementById('send-otp-btn').disabled = true;
-                    
-                    // Show success message
-                    updatePhoneStatus('Phone number verified successfully! You can now proceed with payment.', 'success');
-                })
-                .catch((error) => {
-                    console.error('OTP verification failed:', error);
-                    
-                    let errorMessage = 'Verification failed';
-                    switch(error.code) {
-                        case 'auth/invalid-verification-code':
-                            errorMessage = 'Invalid OTP. Please try again.';
-                            break;
-                        case 'auth/code-expired':
-                            errorMessage = 'OTP expired. Please request a new one.';
-                            break;
-                        default:
-                            errorMessage = error.message;
-                    }
-                    
-                    updateOtpStatus(errorMessage, 'error');
-                    verifyBtn.disabled = false;
-                    verifyBtn.textContent = 'Verify OTP';
-                    window.isPhoneVerified = false;
-                });
-        }
-
-        function updatePhoneStatus(message, type) {
-            const statusElement = document.getElementById('phone-status');
-            if (statusElement) {
-                statusElement.textContent = message;
-                statusElement.className = type;
-            }
-            console.log(`Phone Status: ${message}`);
-        }
-
-        function updateOtpStatus(message, type) {
-            const statusElement = document.getElementById('otp-status');
-            if (statusElement) {
-                statusElement.textContent = message;
-                statusElement.className = type;
-            }
-            console.log(`OTP Status: ${message}`);
-        }        // Initialize payment page
+    <script>
+        // Initialize payment page
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded and parsed.");
-            
-            displayCartItemsOnPayment();
             
             // Load order summary
             loadOrderSummary();
@@ -1363,135 +949,10 @@
             
             // Setup payment method selection
             setupPaymentMethods();
-<<<<<<< HEAD
-              // Setup form validation
-            setupFormValidation();        });
-=======
-            
+              
             // Setup form validation
             setupFormValidation();
-            
-            // Initialize phone verification
-            initializeRecaptcha();
-            
-            // Setup OTP button event listeners
-            const sendBtn = document.getElementById('send-otp-btn');
-            if (sendBtn) {
-                sendBtn.addEventListener('click', sendOTP);
-            }
-
-            const verifyBtn = document.getElementById('verify-otp-btn');
-            if (verifyBtn) {
-                verifyBtn.addEventListener('click', verifyOTP);
-            }
-        });// Fast2SMS OTP Functions
-        async function sendOTP() {
-            const phoneInput = document.getElementById('phone');
-            const sendOtpBtn = document.getElementById('send-otp-btn');
-            let phoneNumber = phoneInput.value.trim();
-
-            // Clean and validate phone number
-            const cleanNumber = phoneNumber.replace(/\D/g, '');
-            
-            // Handle different phone number formats
-            let validatedNumber = '';
-            if (cleanNumber.length === 10 && /^[6-9]/.test(cleanNumber)) {
-                validatedNumber = cleanNumber;
-            } else if (cleanNumber.length === 12 && cleanNumber.startsWith('91')) {
-                validatedNumber = cleanNumber.substring(2);
-            } else {
-                updatePhoneStatus('Please enter a valid 10-digit Indian mobile number (e.g., 9876543210)', 'error');
-                phoneInput.style.borderColor = '#dc3545';
-                return;
-            }
-
-            // Update phone input with clean format
-            phoneInput.value = `+91${validatedNumber}`;
-            phoneInput.style.borderColor = '';
-
-            sendOtpBtn.disabled = true;
-            sendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-            updatePhoneStatus('Sending OTP...', 'info');
-
-            try {
-                // Use Fast2SMS handler to send OTP
-                const success = await fast2smsHandler.sendOTP(validatedNumber, {
-                    type: 'payment_verification',
-                    context: 'checkout'
-                });
-
-                if (success) {
-                    updatePhoneStatus(`OTP sent to +91${validatedNumber}. Check your messages.`, 'success');
-                    document.getElementById('otp-container').style.display = 'block';
-                    sendOtpBtn.innerHTML = '<i class="fa-solid fa-check"></i> OTP Sent';
-                    
-                    // Focus on OTP input
-                    setTimeout(() => {
-                        document.getElementById('otp-code').focus();
-                    }, 100);
-                } else {
-                    throw new Error('Failed to send OTP');
-                }
-
-            } catch (error) {
-                console.error('Error sending OTP:', error);
-                updatePhoneStatus(error.message || 'Failed to send OTP. Please try again.', 'error');
-                sendOtpBtn.disabled = false;
-                sendOtpBtn.innerHTML = '<i class="fa-solid fa-shield-alt"></i> Send OTP';
-            }
-        }        async function verifyOTP() {
-            const otpInput = document.getElementById('otp-code');
-            const verifyOtpBtn = document.getElementById('verify-otp-btn');
-            const otpCode = otpInput.value.trim();
-
-            if (otpCode.length !== 6 || !/^[0-9]{6}$/.test(otpCode)) {
-                updatePhoneStatus('Please enter a valid 6-digit OTP.', 'error');
-                otpInput.style.borderColor = '#dc3545';
-                return;
-            }
-            otpInput.style.borderColor = '';
-
-            verifyOtpBtn.disabled = true;
-            verifyOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-
-            try {
-                // Use Fast2SMS handler to verify OTP
-                const success = await fast2smsHandler.verifyOTP(otpCode);
-
-                if (success) {
-                    window.isPhoneVerified = true;
-                    updatePhoneStatus('Phone number verified successfully!', 'success');
-                    verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verified';
-                    
-                    // Disable inputs after successful verification
-                    document.getElementById('send-otp-btn').disabled = true;
-                    document.getElementById('phone').disabled = true;
-                    document.getElementById('otp-code').disabled = true;
-                    
-                    // Automatically attempt to place order if form is otherwise valid
-                    if (validateForm(false)) {
-                        processOrder();
-                    }
-                } else {
-                    throw new Error('Invalid OTP');
-                }
-
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                window.isPhoneVerified = false;
-                updatePhoneStatus(error.message || 'Invalid OTP. Please try again.', 'error');
-                verifyOtpBtn.disabled = false;
-                verifyOtpBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify OTP';
-            }
-        }
-
-        function updatePhoneStatus(message, type = 'info') {
-            const phoneStatus = document.getElementById('phone-status');
-            phoneStatus.innerHTML = `<small><i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}</small>`;
-            phoneStatus.className = `phone-status ${type}`; // Add class for styling
-        }
-
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
+        });
 
         function setupCartIcon() {
             const cartIcon = document.getElementById('cart-icon');
@@ -1502,17 +963,27 @@
                     window.location.href = 'cart.html';
                 });
             }
-        }
-
-        function loadOrderSummary() {
+        }        function loadOrderSummary() {
             const cart = JSON.parse(localStorage.getItem('aadya_cart') || '[]');
             const orderItemsContainer = document.getElementById('order-items');
             const discountRow = document.getElementById('discount-row'); // Get discount row
             const discountText = document.getElementById('discount'); // Get discount text
             
             if (cart.length === 0) {
-                // Redirect to cart if empty
-                window.location.href = 'cart.html';
+                // Show a helpful message instead of redirecting
+                orderItemsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: #666;">
+                        <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
+                        <h3 style="margin-bottom: 15px;">Your cart is empty</h3>
+                        <p style="margin-bottom: 20px;">Add some products to your cart to proceed with checkout.</p>
+                        <a href="index.html#shop" class="btn btn-primary">Continue Shopping</a>
+                    </div>
+                `;
+                
+                // Reset summary values
+                document.getElementById('subtotal').textContent = '₹0.00';
+                document.getElementById('shipping').textContent = '₹0.00';
+                document.getElementById('total').textContent = '₹0.00';
                 return;
             }
             
@@ -1521,18 +992,18 @@
             
             cart.forEach(item => {
                 const itemPrice = parseFloat(item.price) || 0;
-                const itemTotal = itemPrice * item.quantity;
+                const itemTotal = itemPrice * (item.quantity || 1); // Handle missing quantity
                 subtotal += itemTotal;
                 
                 orderItemsHtml += `
                     <div class="order-item">
-                        <img src="${item.image}" alt="${item.name}" class="item-image">
+                        <img src="${item.image}" alt="${item.name}" class="item-image" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
                         <div class="item-details">
                             <div class="item-name">${item.name}</div>
                             <div class="item-attributes">
                                 ${item.color ? `Color: ${item.color}` : ''} 
                                 ${item.size ? `| Size: ${item.size}` : ''} 
-                                | Qty: ${item.quantity}
+                                | Qty: ${item.quantity || 1}
                             </div>
                         </div>
                         <div class="item-price">₹${itemTotal.toFixed(2)}</div>
@@ -1548,11 +1019,12 @@
             
             // Update summary
             document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-            document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`; // Ensure shipping has 2 decimal places
+            document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`;
             
-            // Check for applied coupon from localStorage (if you implement persistence)
+            // Check for applied coupon from localStorage
             const appliedCoupon = JSON.parse(localStorage.getItem('aadya_applied_coupon'));
             let discountAmount = 0;
+            
             if (appliedCoupon) {
                 if (appliedCoupon.type === 'percentage') {
                     discountAmount = (subtotal * appliedCoupon.discount) / 100;
@@ -1561,12 +1033,13 @@
                 }
                 discountText.textContent = `-₹${discountAmount.toFixed(2)}`;
                 discountRow.style.display = 'flex';
+                
+                // Adjust total after applying discount
+                total = total - discountAmount;
             } else {
                 discountRow.style.display = 'none';
             }
-
-            // Adjust total after applying discount
-            total = total - discountAmount;
+            
             document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
             
             // Update delivery info
@@ -1576,7 +1049,9 @@
             } else {
                 deliveryInfo.innerHTML = '<i class="fa-solid fa-truck" style="margin-right: 5px;"></i>Estimated delivery: 3-5 business days';
             }
-        }        function setupPaymentMethods() {
+        }
+
+        function setupPaymentMethods() {
             const paymentMethods = document.querySelectorAll('.payment-method');
             
             paymentMethods.forEach(method => {
@@ -1618,45 +1093,24 @@
         
         function setupFormValidation() {
             const form = document.getElementById('payment-form');
-              form.addEventListener('submit', function(e) {
+            
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 // Clear previous general errors before validating
                 document.getElementById('alert-error').style.display = 'none';
-                  // Check if Firebase OTP verification is required and completed
-                const firebasePhoneInput = document.getElementById('firebase-phone-input');
-                if (firebasePhoneInput && firebasePhoneInput.value.trim() && !window.isFirebasePhoneVerified) {
-                    showError('Please verify your phone number with Firebase OTP before placing the order.');
-                    updateFirebaseStatus('Firebase OTP verification required before placing order.', 'error');
-                    firebasePhoneInput.focus();
-                    return;
-                }
                 
                 if (validateForm()) {
-                    // If phone number is entered and OTP container is visible but not verified, prompt for OTP
-                    const phoneInput = document.getElementById('phone');
-                    const otpContainer = document.getElementById('otp-container');
-                    if (phoneInput && phoneInput.value.trim() && otpContainer && otpContainer.style.display === 'block' && !window.isPhoneVerified) {
-                        showError('Please verify your phone number with OTP before placing the order.');
-                        updatePhoneStatus('OTP verification required.', 'error');
-                        document.getElementById('otp-code').focus();
-                        return;
-                    }
                     processOrder();
                 }
             });
         }
 
-        function validateForm(checkOtp = true) { // Added checkOtp flag
-            const form = document.getElementById('payment-form'); // Ensure form is defined
+        function validateForm() {
+            const form = document.getElementById('payment-form');
             const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
             let isValid = true;
             
             requiredFields.forEach(field => {
-                // Skip OTP field validation if OTP container is not visible or if checkOtp is false
-                if (field.id === 'otp-code' && (document.getElementById('otp-container').style.display === 'none' || !checkOtp)) {
-                    return;
-                }
-
                 if (!field.value.trim()) {
                     field.style.borderColor = '#dc3545'; // Use a distinct error color
                     isValid = false;
@@ -1680,7 +1134,7 @@
             const phoneRegex = /^(?:\+91[\s-]?)?[0-9]{10}$/; 
             if (phone.value.trim() && !phoneRegex.test(phone.value.trim())) {
                 phone.style.borderColor = '#dc3545';
-                if (checkOtp) showError('Please enter a valid 10-digit phone number (e.g., +91 XXXXXXXXXX or XXXXXXXXXX).');
+                showError('Please enter a valid 10-digit phone number (e.g., +91 XXXXXXXXXX or XXXXXXXXXX).');
                 isValid = false;
             }
             
@@ -1693,14 +1147,11 @@
                 isValid = false;
             }
             
-            // No additional validation needed for simplified payment methods
-            // COD requires no additional validation
-            
-            if (!isValid && checkOtp) { // Only show general error if checkOtp is true
+            if (!isValid) {
                 showError('Please fill in all required fields correctly.');
-            } else if (isValid) {
+            } else {
                 // Clear general error if form becomes valid
-                 document.getElementById('alert-error').style.display = 'none';
+                document.getElementById('alert-error').style.display = 'none';
             }
             
             return isValid;
@@ -1709,22 +1160,6 @@
         function processOrder() {
             const placeOrderBtn = document.getElementById('place-order-btn');
             const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-            const phoneInput = document.getElementById('phone');
-
-            // If phone number is entered but not verified, stop and prompt for OTP.
-            if (phoneInput.value.trim() && !window.isPhoneVerified) {
-                showError('Please verify your phone number with OTP before placing the order.');
-                updatePhoneStatus('OTP verification required.', 'error');
-                // Ensure OTP container is visible if not already
-                if (document.getElementById('otp-container').style.display === 'none') {
-                     sendOTP(); // Attempt to send OTP if not already done
-                } else {
-                    document.getElementById('otp-code').focus();
-                }
-                placeOrderBtn.classList.remove('btn-loading');
-                placeOrderBtn.disabled = false;
-                return;
-            }
             
             // Show loading state on button
             placeOrderBtn.classList.add('btn-loading');
@@ -1732,7 +1167,9 @@
 
             // Proceed with order processing
             completeOrderProcessing(placeOrderBtn, selectedPaymentMethod);
-        }        function completeOrderProcessing(placeOrderBtn, selectedPaymentMethod) {
+        }
+
+        function completeOrderProcessing(placeOrderBtn, selectedPaymentMethod) {
             // Handle different payment methods
             if (selectedPaymentMethod === 'cod') {
                 processCODOrder(placeOrderBtn);
@@ -1741,7 +1178,8 @@
                 showError('This payment method is not available yet. Please use another option.');
                 placeOrderBtn.classList.remove('btn-loading');
                 placeOrderBtn.disabled = false;
-            }        }
+            }
+        }
 
         function processCODOrder(placeOrderBtn) {
             // Show loading state
@@ -1760,8 +1198,7 @@
                         firstName: document.getElementById('firstName').value,
                         lastName: document.getElementById('lastName').value,
                         email: document.getElementById('email').value,
-                        phone: document.getElementById('phone').value,
-                        isPhoneVerified: window.isPhoneVerified // Store verification status
+                        phone: document.getElementById('phone').value
                     },
                     shippingAddress: {
                         address: document.getElementById('address').value,
@@ -1801,86 +1238,11 @@
             }, 2000); // Simulate processing time
         }
 
-        function calculateTotal() {
-            const totalText = document.getElementById('total').textContent;
-            return parseFloat(totalText.replace('₹', '').replace(',', ''));
-        }
-
         function generateOrderId() {
             // More robust Order ID
             const timestamp = Date.now().toString(36); // Base36 for shorter string
             const randomPart = Math.random().toString(36).substring(2, 7); // 5 random chars
             return `AADYA-${timestamp.toUpperCase()}-${randomPart.toUpperCase()}`;
-        }
-
-        function saveOrder(orderData) {
-            // Get existing orders
-            const existingOrders = JSON.parse(localStorage.getItem('aadya_orders') || '[]');
-            
-            // Add new order
-            existingOrders.push(orderData);
-            
-            // Save back to localStorage
-            localStorage.setItem('aadya_orders', JSON.stringify(existingOrders));
-        }
-        
-        function completePostAuthOrder() {
-            // This function seems related to a previous auth flow, might need review or removal if OTP is the primary method now.
-            // For now, let's assume it's still relevant for some edge case or future use.
-            // Get pending order data
-            const pendingOrderData = localStorage.getItem('aadya_pending_order');
-            
-            if (!pendingOrderData) {
-                showError('No pending order found. Please try placing your order again.');
-                setTimeout(() => {
-                    window.location.href = 'payment.html';
-                }, 2000);
-                return;
-            }
-            
-            // Parse pending order data
-            const orderData = JSON.parse(pendingOrderData);
-            
-            // Show loading message
-           
-            showSuccess('Authentication completed! Processing your order...');
-            
-            // Simulate order processing
-            setTimeout(() => {
-                // Generate order ID
-                const orderId = 'AADYA' + Date.now().toString().slice(-6);
-                
-                // Complete order data with cart items
-                const completeOrderData = {
-                    orderId: orderId,
-                    customerInfo: orderData.customerInfo,
-                    shippingAddress: orderData.shippingAddress,
-                    paymentMethod: orderData.paymentMethod,
-                    items: JSON.parse(localStorage.getItem('aadya_cart') || '[]'),
-                    total: document.getElementById('total')?.textContent || '₹0', // Ensure total is captured
-                    orderDate: new Date().toISOString(),
-                    instructions: orderData.instructions,                    discountApplied: localStorage.getItem('aadya_applied_coupon') ? JSON.parse(localStorage.getItem('aadya_applied_coupon')).code : null,
-                    discountAmount: document.getElementById('discount-row').style.display === 'flex' ? document.getElementById('discount').textContent : null
-                };
-                
-                // Store order in localStorage
-                const orders = JSON.parse(localStorage.getItem('aadya_orders') || '[]');
-                orders.push(completeOrderData);
-                localStorage.setItem('aadya_orders', JSON.stringify(orders));
-                
-                // Clear cart and pending order data
-                localStorage.removeItem('aadya_cart');
-                localStorage.removeItem('aadya_pending_order');
-                localStorage.removeItem('aadya_applied_coupon'); // Clear applied coupon
-                
-                // Show success message
-                showSuccess('Order placed successfully! Redirecting to confirmation page...');
-                
-                // Redirect to confirmation page
-                setTimeout(() => {
-                    window.location.href = `order-confirmation.html?orderId=${orderId}`;
-                }, 2000);
-            }, 2000);
         }
 
         function applyCoupon() {
@@ -1965,7 +1327,6 @@
 
         function showError(message) {
             const alertError = document.getElementById('alert-error');
-           
             const messageSpanError = document.getElementById('error-message');
             const alertSuccess = document.getElementById('alert-success');
             
@@ -1988,95 +1349,40 @@
             return JSON.parse(localStorage.getItem('aadya_cart') || '[]');
         }
 
-        // Admin Access System
-        let adminKeySequence = [];
-        const ADMIN_PASSWORD = 'AadyaAdmin2025!';
-
-        // Listen for keyboard shortcut Ctrl+Shift+A
-        document.addEventListener('keydown', function(event) {
-            // Check for Ctrl+Shift+A
-            if (event.ctrlKey && event.shiftKey && event.key === 'A') {
-                event.preventDefault();
-                showAdminModal();
+        // Display cart items on payment page
+        function displayCartItemsOnPayment() {
+            const orderItems = document.getElementById('order-items');
+            const cart = getCart();
+            
+            if (cart.length === 0) {
+                window.location.href = 'cart.html';
+                return;
             }
             
-            // Also handle Escape key to close modal
-            if (event.key === 'Escape') {
-                closeAdminModal();
-            }
-        });
-
-        function showAdminModal() {
-            const modal = document.getElementById('adminModal');
-            const passwordInput = document.getElementById('adminPassword');
+            let html = '';
             
-            modal.classList.add('show');
-            passwordInput.value = '';
-            passwordInput.focus();
-            
-            // Handle Enter key in password input
-            passwordInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    verifyAdminPassword();
-                }
+            cart.forEach(item => {
+                const itemPrice = parseFloat(item.price);
+                const itemTotal = itemPrice * item.quantity;
+                
+                html += `
+                <div class="order-item">
+                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-attributes">
+                            ${item.color ? `Color: ${item.color}` : ''} 
+                            ${item.size ? `Size: ${item.size}` : ''}
+                            | Quantity: ${item.quantity}
+                        </div>
+                    </div>
+                    <div class="item-price">₹${itemTotal.toFixed(2)}</div>
+                </div>
+                `;
             });
-        }
-
-        function closeAdminModal() {
-            const modal = document.getElementById('adminModal');
-           
-            modal.classList.remove('show');
-            document.getElementById('adminPassword').value = '';
-        }
-
-        function verifyAdminPassword() {
-            const passwordInput = document.getElementById('adminPassword');
-            const enteredPassword = passwordInput.value.trim();
             
-            if (enteredPassword === ADMIN_PASSWORD) {
-                // Correct password - redirect to admin panel
-                closeAdminModal();
-                
-                // Show success message briefly before redirect
-                showSuccess('Admin access granted! Redirecting...');
-                
-                setTimeout(() => {
-                    window.location.href = 'add-kurti.html';
-                }, 1000);
-            } else {
-                // Wrong password
-                showError('Incorrect admin password. Access denied.');
-                passwordInput.value = '';
-                passwordInput.focus();
-                
-                // Add shake animation to modal
-                const modal = document.querySelector('.admin-modal');
-                modal.style.animation = 'shake 0.5s ease-in-out';
-                setTimeout(() => {
-                    modal.style.animation = '';
-                }, 500);
-            }
+            orderItems.innerHTML = html;
         }
-
-        // Add CSS for shake animation
-        const shakeAnimation = document.createElement('style');
-        shakeAnimation.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-10px); }
-                75% { transform: translateX(10px); }
-            }
-        `;
-        document.head.appendChild(shakeAnimation);
-
-        // Close modal when clicking outside
-        document.getElementById('adminModal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeAdminModal();
-            }
-        });
-
-        // ...existing code...
     </script>
 
 </body>

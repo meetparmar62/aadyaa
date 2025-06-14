@@ -1784,7 +1784,7 @@
                     </ul>
                     <div class="social-icons">
                         <a href="https://www.instagram.com/aadyaafashion" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="+91 96013 61549"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
                  <!-- <div class="footer-col">
@@ -1989,15 +1989,33 @@
             productCard.className = 'product-card';
             productCard.dataset.productId = product.productId || product.id;
             productCard.style.cursor = 'pointer';
-            
-            // Add click handler for product details modal
+              // Add click handler for product details page
             productCard.addEventListener('click', function(e) {
-                // Don't trigger modal if Add to Cart button was clicked
+                // Don't trigger navigation if Add to Cart button was clicked
                 if (e.target.classList.contains('btn-add-to-cart') || e.target.closest('.btn-add-to-cart')) {
                     e.stopPropagation();
                     return;
                 }
-                openProductModal(product);
+                // Navigate to product detail page with product data
+                const productId = product.productId || product.id || 'product_' + Date.now();
+                
+                // Store product data in localStorage for the detail page
+                localStorage.setItem(`product_detail_${productId}`, JSON.stringify(product));
+                
+                // Navigate to product detail page with URL parameters as fallback
+                const params = new URLSearchParams({
+                    id: productId,
+                    name: product.name || 'Product',
+                    price: product.price || '0',
+                    image: product.images?.[0] || product.primaryImage || product.imageUrl || '',
+                    category: product.category || 'General',
+                    fabric: product.fabric || 'Cotton',
+                    description: product.description || 'Beautiful product',
+                    stock: product.stock || '0',
+                    discount: product.discount || '0'
+                });
+                
+                window.location.href = `product-detail.html?${params.toString()}`;
             });
             
             // Create image container
@@ -2039,12 +2057,11 @@
             // Create product info container
             const productInfo = document.createElement('div');
             productInfo.className = 'product-info';
-            
-            // Create product name with click hint
+              // Create product name with click hint
             const productName = document.createElement('h3');
             productName.textContent = product.name || 'Untitled Product';
             productName.style.cursor = 'pointer';
-            productName.title = 'Click to view details';
+            productName.title = 'Click to view full product details';
             
             // Create price element with discount calculation if applicable
             const productPrice = document.createElement('p');
@@ -2112,11 +2129,10 @@
             categoryTag.className = 'category-tag';
             categoryTag.textContent = product.category || 'General';
             categoryTag.style.cssText = 'font-size: 10px; background: #f8f9fa; color: #6c757d; padding: 2px 6px; border-radius: 8px; margin-right: 5px; display: inline-block;';
-            
-            // Add view details hint
+              // Add view details hint
             const viewDetailsHint = document.createElement('p');
             viewDetailsHint.className = 'view-details-hint';
-            viewDetailsHint.textContent = '👆 Click to view details';
+            viewDetailsHint.textContent = '👆 Click to view full details';
             viewDetailsHint.style.cssText = 'font-size: 11px; color: #999; margin: 5px 0 0 0; text-align: center; opacity: 0.7;';
             
             // Assemble the elements
