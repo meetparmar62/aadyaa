@@ -1,4 +1,7 @@
-// Firebase configuration for v8 SDK (more stable for phone auth)
+// Firebase v9 Configuration for Aadya E-commerce
+// Modern modular Firebase SDK
+
+// Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyBzi_HweeamgBRWOzH4Mq7bjLv_g8elZx0",
   authDomain: "aadya-fashions.firebaseapp.com",
@@ -8,10 +11,7 @@ const firebaseConfig = {
   appId: "1:721311924078:web:3e16ea2ba0a07fd6678b7f"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Export configuration for use in other modules
+window.firebaseConfig = firebaseConfig;
 
-// Get Auth instance
-const auth = firebase.auth();
-
-console.log("Firebase v8 initialized successfully");
+console.log("Firebase configuration loaded successfully");
