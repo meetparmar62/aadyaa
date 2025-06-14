@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">    <!-- Cart Functionality Script -->
     <script src="aadya-cart.js"></script>
 
-<<<<<<< HEAD
-=======
     <!-- Razorpay SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>    <!-- Razorpay Configuration -->
     <script src="razorpay-config.js"></script>
@@ -42,7 +40,6 @@
     <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
 
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
     <style>
         :root {
             --primary-peach: #FFDAB9;
@@ -260,12 +257,10 @@
             background-color: var(--neutral-white);
             border-radius: 15px;        
             padding: 30px;
-            box-shadow: var(--shadow);        }
+            box-shadow: var(--shadow);
+        }
 
-<<<<<<< HEAD
-=======
         /* OTP Verification Section */
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -629,10 +624,68 @@
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
-        }        .alert.error {
+        }
+
+        .alert.error {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
+        }
+
+        /* Custom styles for OTP section */
+        #phone-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #phone-input-group input[type="tel"] {
+            flex-grow: 1; /* Allow phone input to take available space */
+        }
+
+        #send-otp-btn, #verify-otp-btn {
+            background: linear-gradient(135deg, var(--accent-coral), #FF6B47);
+            color: var(--neutral-white);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #phone-status {
+            margin-top: 5px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            font-size: 0.9rem;
+        }
+
+        #phone-status.success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        #phone-status.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        #otp-container {
+            margin-top: 15px; /* Add some space above OTP input */
+        }
+
+        #otp-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #otp-input-group input[type="text"] {
+            flex-grow: 1;
         }
 
         /* Admin Modal Styles */
@@ -727,12 +780,11 @@
             transform: translateY(-2px);
         }
 
-        /* Shake animation for admin modal */        @keyframes shake {
+        /* Shake animation for admin modal */
+        @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-<<<<<<< HEAD
-=======
         }        /* OTP Verification Styles */        #recaptcha-container {
             min-height: 78px; /* Standard reCAPTCHA height */
             margin: 20px 0;
@@ -764,7 +816,6 @@
         }
         #phone-status.error, #otp-status.error {
             color: #dc3545;
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
         }
     </style>
 </head>
@@ -852,7 +903,26 @@
                                     <input type="email" id="email" name="email" required>
                                 </div>                                <div class="form-group">
                                     <label for="phone">Phone Number *</label>
-                                    <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit Indian mobile number" pattern="[0-9]{10}" required>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit Indian mobile number" pattern="^\+91[0-9]{10}$" value="+91" inputmode="tel" required style="flex: 1;">
+                                        <button type="button" id="send-otp-btn" onclick="sendOTP()" 
+                                                class="btn" style="background: linear-gradient(135deg, var(--accent-coral), #FF6B47); color: var(--text-charcoal);">
+                                            <i class="fa-solid fa-shield-alt"></i> Send OTP
+                                        </button>
+                                    </div>
+                                    <div id="phone-status" style="margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; background: #f8f9fa;">
+                                        <small><i class="fa-solid fa-info-circle"></i> We'll send an OTP to verify your phone number.</small>
+                                    </div>
+                                </div>                                <!-- OTP Verification Section (Initially Hidden) -->
+                                <div class="form-group full-width" id="otp-container" style="display: none;">
+                                    <label for="otp-code">Enter OTP *</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="text" id="otp-code" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" style="flex: 1;">
+                                        <button type="button" id="verify-otp-btn" onclick="verifyOTP()"
+                                                class="btn" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">
+                                            <i class="fa-solid fa-check-circle"></i> Verify OTP
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -907,6 +977,15 @@
                                 <i class="fa-solid fa-credit-card"></i>
                                 Payment Method
                             </h2>                            <div class="payment-methods">
+                                <div class="payment-method" data-method="razorpay">
+                                    <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
+                                    <i class="fa-solid fa-credit-card"></i>
+                                    <div>
+                                        <label for="razorpay">Online Payment</label>
+                                        <small>UPI, Cards, Net Banking, Wallets</small>
+                                    </div>
+                                </div>
+                                
                                 <div class="payment-method selected" data-method="cod">
                                     <input type="radio" name="paymentMethod" value="cod" id="cod" checked>
                                     <i class="fa-solid fa-money-bills"></i>
@@ -915,9 +994,6 @@
                                         <small>Pay when your order is delivered</small>
                                     </div>
                                 </div>
-<<<<<<< HEAD
-                            </div>                        </div>
-=======
                             </div>
 
                             <!-- Payment Method Details -->
@@ -990,7 +1066,6 @@
                                 <small id="otp-status" style="margin-top: 10px; display: block;"></small>
                             </div>
                         </div>
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
 
                         <!-- Special Instructions -->
                         <div class="form-section">
@@ -1133,8 +1208,9 @@
                     container.classList.add('error');
                     return;
                 }                // Use correct Firebase v9 RecaptchaVerifier constructor
-                // Syntax: new RecaptchaVerifier(containerId, parameters, auth)
+                // Syntax: new RecaptchaVerifier(auth, containerId, parameters)
                 window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier(
+                    window.firebaseAuth,
                     'recaptcha-container',
                     {
                         'size': 'normal',
@@ -1159,8 +1235,7 @@
                             container.classList.add('error');
                             if(sendOtpButton) sendOtpButton.disabled = true;
                         }
-                    },
-                    window.firebaseAuth
+                    }
                 );
 
                 window.recaptchaVerifier.render().then((widgetId) => {
@@ -1363,10 +1438,6 @@
             
             // Setup payment method selection
             setupPaymentMethods();
-<<<<<<< HEAD
-              // Setup form validation
-            setupFormValidation();        });
-=======
             
             // Setup form validation
             setupFormValidation();
@@ -1491,7 +1562,6 @@
             phoneStatus.className = `phone-status ${type}`; // Add class for styling
         }
 
->>>>>>> c9d45c45a58c3543f0c88f211f11deebf00bc78d
 
         function setupCartIcon() {
             const cartIcon = document.getElementById('cart-icon');
@@ -1736,13 +1806,43 @@
             // Handle different payment methods
             if (selectedPaymentMethod === 'cod') {
                 processCODOrder(placeOrderBtn);
+            } else if (selectedPaymentMethod === 'razorpay') {
+                processRazorpayOrder(placeOrderBtn);
             } else {
                 // For other payment methods not yet implemented
                 showError('This payment method is not available yet. Please use another option.');
                 placeOrderBtn.classList.remove('btn-loading');
                 placeOrderBtn.disabled = false;
-            }        }
+            }
+        }
 
+        function processRazorpayOrder(placeOrderBtn) {
+            // Show loading state
+            placeOrderBtn.classList.add('btn-loading');
+            placeOrderBtn.disabled = true;
+            
+            // Prepare order data
+            const orderData = {
+                customerInfo: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    isPhoneVerified: window.isPhoneVerified
+                },
+                shippingAddress: {
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    pincode: document.getElementById('pincode').value,
+                    landmark: document.getElementById('landmark').value
+                },
+                instructions: document.getElementById('instructions').value
+            };
+            
+            // Initialize Razorpay payment
+            window.aadyaPaymentHandler.initiatePayment(orderData);
+        }
         function processCODOrder(placeOrderBtn) {
             // Show loading state
             placeOrderBtn.classList.add('btn-loading');
