@@ -811,13 +811,30 @@
                     </div>
                 </div>
             `;
-        }
-
-        // Helper function for product navigation
+        }        // Helper function for product navigation
         function goToProduct(productId) {
-            // In a real application, this would navigate to the product detail page
-            console.log('Navigate to product:', productId);
-            // You can implement this to redirect to product detail page
+            // Get the product data from cart to store in localStorage
+            const cart = getCart();
+            const product = cart.find(item => item.productId === productId || item.id === productId);
+            
+            if (product) {
+                // Store product data in localStorage for the detail page
+                const productData = {
+                    id: product.productId || product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    category: product.category || 'General',
+                    fabric: product.fabric || 'Cotton',
+                    description: product.description || 'Beautiful product from our collection',
+                    stock: product.stock || 'In Stock',
+                    discount: product.discount || '0'
+                };
+                
+                localStorage.setItem(`product_detail_${productData.id}`, JSON.stringify(productData));
+            }
+            
+            // Navigate to product detail page with only the product ID
             window.location.href = `product-detail.html?id=${productId}`;
         }
 

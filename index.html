@@ -1988,8 +1988,7 @@
             const productCard = document.createElement('div');
             productCard.className = 'product-card';
             productCard.dataset.productId = product.productId || product.id;
-            productCard.style.cursor = 'pointer';
-              // Add click handler for product details page
+            productCard.style.cursor = 'pointer';            // Add click handler for product details page
             productCard.addEventListener('click', function(e) {
                 // Don't trigger navigation if Add to Cart button was clicked
                 if (e.target.classList.contains('btn-add-to-cart') || e.target.closest('.btn-add-to-cart')) {
@@ -1999,23 +1998,11 @@
                 // Navigate to product detail page with product data
                 const productId = product.productId || product.id || 'product_' + Date.now();
                 
-                // Store product data in localStorage for the detail page
+                // Store complete product data in localStorage for the detail page
                 localStorage.setItem(`product_detail_${productId}`, JSON.stringify(product));
                 
-                // Navigate to product detail page with URL parameters as fallback
-                const params = new URLSearchParams({
-                    id: productId,
-                    name: product.name || 'Product',
-                    price: product.price || '0',
-                    image: product.images?.[0] || product.primaryImage || product.imageUrl || '',
-                    category: product.category || 'General',
-                    fabric: product.fabric || 'Cotton',
-                    description: product.description || 'Beautiful product',
-                    stock: product.stock || '0',
-                    discount: product.discount || '0'
-                });
-                
-                window.location.href = `product-detail.html?${params.toString()}`;
+                // Navigate to product detail page with only the product ID
+                window.location.href = `product-detail.html?id=${productId}`;
             });
             
             // Create image container
