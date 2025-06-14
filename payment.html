@@ -16,8 +16,10 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <!-- Razorpay Configuration -->
-    <script src="razorpay-config.js"></script>    <!-- Firebase SDK v9+ (modular) -->
-    <script type="module" src="firebase-config.js"></script> <!-- Firebase config with ES6 modules -->
+    <script src="razorpay-config.js"></script>    <!-- Firebase SDKs for compat (global) usage -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
 
     <style>
         :root {
@@ -988,8 +990,35 @@
                                         </p>
                                     </div>
                                 </div>
+                            </div>                        </div>
+
+                        <!-- Firebase Phone Verification Section -->
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <i class="fa-solid fa-shield-alt"></i>
+                                Phone Verification
+                            </h2>
+                            
+                            <!-- reCAPTCHA container (required by Firebase) -->
+                            <div id="recaptcha-container"></div>
+                            
+                            <div class="form-group full-width">
+                                <label for="firebase-phone">Phone Number (for OTP verification)</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="tel" id="firebase-phone" name="firebase-phone" placeholder="Enter your 10-digit phone number" required>
+                                    <button type="button" class="btn btn-secondary" onclick="sendFirebaseOTP()" style="padding: 10px 15px; white-space: nowrap;">Send OTP</button>
+                                </div>
+                                <small id="firebase-phone-status" style="margin-top: 5px; display: block;"></small>
                             </div>
-  
+                            
+                            <div class="form-group full-width" id="firebase-otp-input-group" style="display: none;">
+                                <label for="firebase-otp">Enter OTP</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="firebase-otp" name="firebase-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                                    <button type="button" class="btn btn-secondary" onclick="verifyFirebaseOTP()" style="padding: 10px 15px; white-space: nowrap;">Verify OTP</button>
+                                </div>
+                                <small id="firebase-otp-status" style="margin-top: 5px; display: block;"></small>
+                            </div>
                         </div>
 
                         <!-- Special Instructions -->
@@ -1072,13 +1101,14 @@
         </div>
     </footer>      <script>        
         // Theme toggle functionality (remains the same)
-        // ...        /* Firebase OTP Functions - Modern SDK */
+        // ...        /* Firebase OTP Functions - Compat SDK */
         window.recaptchaVerifier = null;
         window.confirmationResult = null;
         let isFirebaseOTPVerified = false;
 
         function initializeRecaptcha() {
             console.log("Attempting to initialize reCAPTCHA...");
+            
             if (!document.getElementById('recaptcha-container')) {
                 console.error("reCAPTCHA container not found in the DOM.");
                 const phoneStatus = document.getElementById('firebase-phone-status');
@@ -1089,16 +1119,17 @@
                 return;
             }
             
-            // Wait for Firebase auth to be available
-            if (!window.firebaseAuth || !window.RecaptchaVerifier) {
-                console.log("Firebase auth not ready yet, retrying in 100ms...");
+            // Check if Firebase is loaded
+            if (typeof firebase === 'undefined' || !firebase.auth) {
+                console.log("Firebase not ready yet, retrying in 100ms...");
                 setTimeout(initializeRecaptcha, 100);
                 return;
             }
             
             if (!window.recaptchaVerifier) {
                 try {
-                    window.recaptchaVerifier = new window.RecaptchaVerifier('recaptcha-container', {
+                    console.log("Creating new RecaptchaVerifier...");
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                         'size': 'invisible',
                         'callback': (response) => {
                             console.log("reCAPTCHA solved successfully:", response);
@@ -1111,7 +1142,7 @@
                                 phoneStatus.className = 'error';
                             }
                         }
-                    }, window.firebaseAuth);
+                    });
                     
                     window.recaptchaVerifier.render().then(function(widgetId) {
                         console.log("reCAPTCHA rendered successfully. Widget ID:", widgetId);
@@ -1141,8 +1172,8 @@
             console.log("sendFirebaseOTP called.");
             
             // Ensure Firebase is loaded
-            if (!window.firebaseAuth || !window.signInWithPhoneNumber) {
-                console.error("Firebase auth not available");
+            if (typeof firebase === 'undefined' || !firebase.auth) {
+                console.error("Firebase not available");
                 const phoneStatus = document.getElementById('firebase-phone-status');
                 if(phoneStatus) {
                     phoneStatus.textContent = 'Firebase not loaded. Please refresh the page.';
@@ -1151,7 +1182,12 @@
                 return;
             }
             
-            initializeRecaptcha(); // Ensure reCAPTCHA is initialized
+            // Ensure reCAPTCHA is initialized
+            if (!window.recaptchaVerifier) {
+                initializeRecaptcha();
+                // Wait a bit for initialization
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
 
             const phoneInput = document.getElementById('firebase-phone');
             const phoneStatus = document.getElementById('firebase-phone-status');
@@ -1165,10 +1201,141 @@
             let phoneNumber = phoneInput.value.trim();
             console.log("Raw phone number input:", phoneNumber);
 
+            // Validate and format phone number
             if (!/^\+?[1-9]\d{1,14}$/.test(phoneNumber)) {
-                 if (/^\d{10}$/.test(phoneNumber)) { 
+                if (/^\d{10}$/.test(phoneNumber)) { 
                     phoneNumber = '+91' + phoneNumber;
                     console.log("Formatted Indian phone number:", phoneNumber);
+                } else {
+                    phoneStatus.textContent = 'Please enter a valid phone number (e.g., +919876543210 or 9876543210).';
+                    phoneStatus.className = 'error';
+                    console.warn("Invalid phone number format:", phoneInput.value.trim());
+                    return;
+                }
+            }
+
+            phoneStatus.textContent = 'Sending OTP...';
+            phoneStatus.className = '';
+            console.log(`Attempting to send OTP to ${phoneNumber} using Firebase.`);
+
+            if (!window.recaptchaVerifier) {
+                phoneStatus.textContent = 'reCAPTCHA not ready. Please wait and try again.';
+                phoneStatus.className = 'error';
+                console.error("recaptchaVerifier not available when trying to send OTP.");
+                return;
+            }
+
+            try {
+                const appVerifier = window.recaptchaVerifier;
+                console.log("Using appVerifier:", appVerifier);
+                
+                // Use Firebase compat API
+                window.confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
+                console.log("Firebase signInWithPhoneNumber successful. Confirmation result:", window.confirmationResult);
+                
+                phoneStatus.textContent = `OTP sent to ${phoneNumber}`;
+                phoneStatus.className = 'success';
+                otpInputGroup.style.display = 'block';
+                phoneInput.disabled = true;
+                
+            } catch (error) {
+                console.error('Error sending Firebase OTP:', error);
+                let errorMessage = 'Failed to send OTP. ';
+                
+                if (error.code) {
+                    console.log("Firebase error code:", error.code);
+                    switch(error.code) {
+                        case 'auth/invalid-phone-number':
+                            errorMessage = 'Invalid phone number format. Please include country code (e.g., +91 for India).';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many requests. Please wait before trying again.';
+                            break;
+                        case 'auth/captcha-check-failed':
+                            errorMessage = 'reCAPTCHA verification failed. Please try again.';
+                            break;
+                        case 'auth/quota-exceeded':
+                            errorMessage = 'SMS quota exceeded. Please try again later.';
+                            break;
+                        default:
+                            errorMessage += `Error: ${error.code} - ${error.message}`;
+                    }
+                } else {
+                    errorMessage += error.message || 'Please try again.';
+                }
+                
+                phoneStatus.textContent = errorMessage;
+                phoneStatus.className = 'error';
+                
+                // Reset reCAPTCHA for next attempt
+                console.log("Resetting reCAPTCHA after error...");
+                window.recaptchaVerifier = null;
+                setTimeout(() => {
+                    initializeRecaptcha();
+                }, 1000);
+            }
+        }
+
+        async function verifyFirebaseOTP() {
+            console.log("verifyFirebaseOTP called.");
+            const otpInput = document.getElementById('firebase-otp');
+            const otpStatus = document.getElementById('firebase-otp-status');
+            const enteredOTP = otpInput.value.trim();
+
+            if (!window.confirmationResult) {
+                otpStatus.textContent = 'Please send OTP first.';
+                otpStatus.className = 'error';
+                console.error("No confirmation result available");
+                return;
+            }
+            
+            if (!enteredOTP || enteredOTP.length !== 6 || !/^\d{6}$/.test(enteredOTP)) {
+                otpStatus.textContent = 'Please enter a valid 6-digit OTP.';
+                otpStatus.className = 'error';
+                return;
+            }
+
+            otpStatus.textContent = 'Verifying OTP...';
+            otpStatus.className = '';
+
+            try {
+                const result = await window.confirmationResult.confirm(enteredOTP);
+                console.log("OTP verification successful:", result);
+                
+                otpStatus.textContent = 'OTP verified successfully!';
+                otpStatus.className = 'success';
+                isFirebaseOTPVerified = true;
+                
+                // Disable OTP fields after successful verification
+                document.getElementById('firebase-phone').disabled = true;
+                document.getElementById('firebase-otp').disabled = true;
+                document.querySelector('[onclick="verifyFirebaseOTP()"]').disabled = true;
+                document.querySelector('[onclick="sendFirebaseOTP()"]').disabled = true;
+
+            } catch (error) {
+                console.error('Error verifying Firebase OTP:', error);
+                let errorMessage = '';
+                
+                if (error.code) {
+                    switch(error.code) {
+                        case 'auth/invalid-verification-code':
+                            errorMessage = 'Invalid OTP code. Please check and try again.';
+                            break;
+                        case 'auth/code-expired':
+                            errorMessage = 'OTP has expired. Please request a new one.';
+                            break;
+                        default:
+                            errorMessage = `Error: ${error.code} - ${error.message}`;
+                    }
+                } else {
+                    errorMessage = 'Invalid OTP or verification error. Please try again.';
+                }
+                
+                otpStatus.textContent = errorMessage;
+                otpStatus.className = 'error';
+                isFirebaseOTPVerified = false;
+            }
+        }
                 } else {
                     phoneStatus.textContent = 'Please enter a valid phone number (e.g., +919876543210 or 9876543210).';
                     phoneStatus.className = 'error';
@@ -1640,17 +1807,29 @@
         
         function setupFormValidation() {
             const form = document.getElementById('payment-form');
-            
-            form.addEventListener('submit', function(e) {
+              form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 // Clear previous general errors before validating
                 document.getElementById('alert-error').style.display = 'none';
+                
+                // Check if Firebase OTP verification is required and completed
+                const firebasePhoneInput = document.getElementById('firebase-phone');
+                if (firebasePhoneInput && firebasePhoneInput.value.trim() && !isFirebaseOTPVerified) {
+                    showError('Please verify your phone number with OTP before placing the order.');
+                    const phoneStatus = document.getElementById('firebase-phone-status');
+                    if (phoneStatus) {
+                        phoneStatus.textContent = 'OTP verification required before placing order.';
+                        phoneStatus.className = 'error';
+                    }
+                    firebasePhoneInput.focus();
+                    return;
+                }
                 
                 if (validateForm()) {
                     // If phone number is entered and OTP container is visible but not verified, prompt for OTP
                     const phoneInput = document.getElementById('phone');
                     const otpContainer = document.getElementById('otp-container');
-                    if (phoneInput.value.trim() && otpContainer.style.display === 'block' && !window.isPhoneVerified) {
+                    if (phoneInput && phoneInput.value.trim() && otpContainer && otpContainer.style.display === 'block' && !window.isPhoneVerified) {
                         showError('Please verify your phone number with OTP before placing the order.');
                         updatePhoneStatus('OTP verification required.', 'error');
                         document.getElementById('otp-code').focus();
