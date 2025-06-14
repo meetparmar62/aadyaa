@@ -13,12 +13,31 @@
     <script src="aadya-cart.js"></script>
 
     <!-- Razorpay SDK -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>    <!-- Razorpay Configuration -->
+    <script src="razorpay-config.js"></script>
     
-    <!-- Razorpay Configuration -->
-    <script src="razorpay-config.js"></script>    <!-- Firebase v8 SDK (more stable for phone auth) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <!-- Firebase v9 SDK (modular) -->
+    <script type="module">
+        // Import Firebase v9 modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        
+        // Initialize Firebase
+        const app = initializeApp(window.firebaseConfig);
+        const auth = getAuth(app);
+        
+        // Make Firebase services available globally
+        window.firebaseAuth = auth;
+        window.FirebaseRecaptchaVerifier = RecaptchaVerifier;
+        window.firebaseSignInWithPhoneNumber = signInWithPhoneNumber;
+        
+        console.log("Firebase v9 initialized successfully");
+        
+        // Dispatch custom event to signal Firebase is ready
+        window.dispatchEvent(new CustomEvent('firebaseReady'));
+    </script>
+    
+    <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
 
     <style>
@@ -241,7 +260,7 @@
             box-shadow: var(--shadow);
         }
 
-        /* Firebase OTP Verification Section */
+        /* OTP Verification Section */
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -766,8 +785,7 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-        }        /* Firebase OTP Verification Styles */
-        #recaptcha-container-new {
+        }        /* OTP Verification Styles */        #recaptcha-container {
             min-height: 78px; /* Standard reCAPTCHA height */
             margin: 20px 0;
             border: 2px dashed #007bff;
@@ -780,25 +798,23 @@
             text-align: center;
         }
         
-        #recaptcha-container-new.loading {
+        #recaptcha-container.loading {
             background: #fff3cd;
             border-color: #ffc107;
         }
         
-        #recaptcha-container-new.error {
+        #recaptcha-container.error {
             background: #f8d7da;
             border-color: #dc3545;
         }
         
-        #recaptcha-container-new.success {
+        #recaptcha-container.success {
             background: #d4edda;
             border-color: #28a745;
-        }
-
-        #firebase-phone-status.success, #firebase-otp-status.success {
+        }#phone-status.success, #otp-status.success {
             color: #28a745; 
         }
-        #firebase-phone-status.error, #firebase-otp-status.error {
+        #phone-status.error, #otp-status.error {
             color: #dc3545;
         }
     </style>
@@ -1016,35 +1032,38 @@
                                         </p>
                                     </div>
                                 </div>
-                            </div>                        </div>
-
-                        <!-- Firebase Phone Verification Section -->
-                        <div class="form-section" id="firebase-auth-section">
+                            </div>                        </div>                        <!-- Phone Verification Section -->
+                        <div class="form-section" id="phone-auth-section">
                             <h2 class="section-title">
                                 <i class="fa-solid fa-shield-alt"></i>
                                 Verify Your Phone Number
-                            </h2>                            <div class="form-group full-width">
-                                <label for="firebase-phone-input">Phone Number</label>
+                            </h2>
+                            
+                            <div class="form-group full-width">
+                                <label for="phone-input">Phone Number</label>
                                 <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="tel" id="firebase-phone-input" name="firebase-phone-input" placeholder="Enter 10-digit mobile number" required>
-                                    <button type="button" id="firebase-send-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Send OTP</button>
-                                </div>                                  <!-- Firebase reCAPTCHA container with proper styling -->
-                                <div id="recaptcha-container-auto" style="margin: 15px 0; min-height: 78px; border: 2px dashed #ddd; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                                    <input type="tel" id="phone-input" name="phone-input" placeholder="Enter 10-digit mobile number" required>
+                                    <button type="button" id="send-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Send OTP</button>
+                                </div>
+                                
+                                <!-- reCAPTCHA container -->
+                                <div id="recaptcha-container" style="margin: 15px 0; min-height: 78px; border: 2px dashed #ddd; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
                                     <div style="text-align: center; color: #666;">
                                         <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>
-                                        Loading reCAPTCHA...
+                                        Loading verification...
                                     </div>
                                 </div>
                                 
-                                <small id="firebase-phone-status-new" style="margin-top: 10px; display: block;">Enter your phone number and click Send OTP. Firebase will handle security automatically.</small>
+                                <small id="phone-status" style="margin-top: 10px; display: block;">Enter your phone number and click Send OTP for secure verification.</small>
                             </div>
-                            <div class="form-group full-width" id="firebase-otp-input-container" style="display: none;">
-                                <label for="firebase-otp-input">Enter OTP</label>
+                            
+                            <div class="form-group full-width" id="otp-input-container" style="display: none;">
+                                <label for="otp-input">Enter OTP</label>
                                 <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="text" id="firebase-otp-input" name="firebase-otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
-                                    <button type="button" id="firebase-verify-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Verify OTP</button>
+                                    <input type="text" id="otp-input" name="otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
+                                    <button type="button" id="verify-otp-btn" class="btn btn-secondary" style="padding: 10px 15px; white-space: nowrap;">Verify OTP</button>
                                 </div>
-                                <small id="firebase-otp-status-new" style="margin-top: 10px; display: block;"></small>
+                                <small id="otp-status" style="margin-top: 10px; display: block;"></small>
                             </div>
                         </div>
 
@@ -1126,175 +1145,92 @@
         <div class="navbar" style="justify-content: center;">
             <p>&copy; 2025 Aadya Fashions. All Rights Reserved.</p>
         </div>
-    </footer>      <script>        
-        // Theme toggle functionality (remains the same)
-        // ...        /* Firebase Phone Authentication with reCAPTCHA */
-        window.isFirebasePhoneVerified = false;
-        window.firebaseConfirmationResult = null;
-        window.firebaseRecaptchaVerifier = null;
+    </footer>      <script>          // Theme toggle functionality (remains the same)
+        // ...        /* Phone Verification Variables */
+        window.isPhoneVerified = false;
+        window.recaptchaVerifier = null;
+        window.recaptchaWidgetId = null;
         
-        // Initialize Firebase reCAPTCHA verifier with enhanced debugging
-        function initializeFirebaseRecaptcha() {
-            console.log('[Firebase] Starting reCAPTCHA initialization...');
-            
-            // Update container to show initialization status
-            const container = document.getElementById('recaptcha-container-auto');
+        // Initialize Firebase reCAPTCHA verifier
+        function initializeRecaptcha() {
+            const container = document.getElementById('recaptcha-container');
             if (!container) {
-                console.error('[Firebase] reCAPTCHA container not found');
-                updateFirebaseStatus('reCAPTCHA container missing. Please refresh the page.', 'error');
+                console.error('reCAPTCHA container not found');
                 return;
             }
             
-            // Check Firebase availability with detailed logging
-            console.log('[Firebase] Checking Firebase SDK...');
-            console.log('[Firebase] typeof firebase:', typeof firebase);
-            console.log('[Firebase] firebase object:', firebase);
+            container.innerHTML = '<div style="text-align: center; color: #666;"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Loading Firebase SDK...</div>';
+            updatePhoneStatus('Initializing phone verification system...', 'info');
             
-            if (typeof firebase === 'undefined') {
-                console.error('[Firebase] Firebase SDK not loaded');
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>Firebase SDK not loaded</div>';
-                updateFirebaseStatus('Firebase SDK not loaded. Please refresh the page.', 'error');
-                return;
-            }
-            
-            if (!firebase.auth) {
-                console.error('[Firebase] Firebase Auth not available');
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>Firebase Auth not available</div>';
-                updateFirebaseStatus('Firebase Auth not available. Please refresh the page.', 'error');
-                return;
-            }
-            
-            console.log('[Firebase] firebase.auth:', firebase.auth);
-            console.log('[Firebase] firebase.auth():', firebase.auth());
-            console.log('[Firebase] firebase.auth.RecaptchaVerifier:', firebase.auth.RecaptchaVerifier);
-            
-            if (!firebase.auth.RecaptchaVerifier) {
-                console.error('[Firebase] RecaptchaVerifier not available');
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>RecaptchaVerifier not available</div>';
-                updateFirebaseStatus('RecaptchaVerifier not available. Please refresh the page.', 'error');
-                return;
-            }
-            
-            // Clear any existing verifier
-            if (window.firebaseRecaptchaVerifier) {
-                try {
-                    console.log('[Firebase] Clearing existing verifier...');
-                    window.firebaseRecaptchaVerifier.clear();
-                } catch (e) {
-                    console.warn('[Firebase] Error clearing existing verifier:', e);
-                }
-                window.firebaseRecaptchaVerifier = null;
-            }
-            
-            // Clear container and show loading
-            container.innerHTML = '<div style="text-align: center; color: #007bff;"><i class="fa-solid fa-spinner fa-spin"></i><br>Initializing reCAPTCHA...</div>';
-            
-            try {
-                console.log('[Firebase] Creating RecaptchaVerifier...');
-                
-                // Create visible reCAPTCHA widget
-                window.firebaseRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container-auto', {
-                    'size': 'normal',
-                    'callback': function(response) {
-                        console.log('[Firebase] reCAPTCHA solved successfully:', response);
-                        updateFirebaseStatus('reCAPTCHA verified! You can now send OTP.', 'success');
-                    },
-                    'expired-callback': function() {
-                        console.warn('[Firebase] reCAPTCHA expired');
-                        updateFirebaseStatus('reCAPTCHA expired. Please solve it again.', 'error');
-                    },
-                    'error-callback': function(error) {
-                        console.error('[Firebase] reCAPTCHA error:', error);
-                        container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>reCAPTCHA error occurred</div>';
-                        updateFirebaseStatus('reCAPTCHA error: ' + error.message, 'error');
-                    }
-                });
-                
-                console.log('[Firebase] RecaptchaVerifier created successfully:', window.firebaseRecaptchaVerifier);
-                console.log('[Firebase] Now attempting to render...');
-                
-                // Set a timeout for the render process
-                const renderTimeout = setTimeout(() => {
-                    console.error('[Firebase] reCAPTCHA render timeout');
-                    container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-clock"></i><br>reCAPTCHA load timeout<br><button onclick="initializeFirebaseRecaptcha()" style="margin-top: 5px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button></div>';
-                    updateFirebaseStatus('reCAPTCHA load timeout. Click Retry to try again.', 'error');
-                }, 15000); // 15 second timeout
-                
-                // Render the widget
-                window.firebaseRecaptchaVerifier.render().then(function(widgetId) {
-                    clearTimeout(renderTimeout);
-                    console.log('[Firebase] reCAPTCHA rendered successfully! Widget ID:', widgetId);
-                    updateFirebaseStatus('reCAPTCHA loaded successfully! Please solve it to continue.', 'success');
-                }).catch(function(error) {
-                    clearTimeout(renderTimeout);
-                    console.error('[Firebase] reCAPTCHA render failed:', error);
-                    console.error('[Firebase] Error details:', {
-                        code: error.code,
-                        message: error.message,
-                        stack: error.stack
-                    });
-                    
-                    // Try invisible reCAPTCHA as fallback
-                    console.log('[Firebase] Trying invisible reCAPTCHA as fallback...');
-                    tryInvisibleRecaptcha();
-                });
-                
-            } catch (error) {
-                console.error('[Firebase] reCAPTCHA initialization failed:', error);
-                console.error('[Firebase] Error details:', {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack
-                });
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>Initialization failed<br><button onclick="initializeFirebaseRecaptcha()" style="margin-top: 5px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button></div>';
-                updateFirebaseStatus('reCAPTCHA initialization failed: ' + error.message, 'error');
+            // Wait for Firebase to be ready
+            if (window.firebaseAuth && window.FirebaseRecaptchaVerifier) {
+                setupRecaptcha();
+            } else {
+                // Listen for Firebase ready event
+                window.addEventListener('firebaseReady', setupRecaptcha);
             }
         }
         
-        // Fallback to invisible reCAPTCHA
-        function tryInvisibleRecaptcha() {
-            console.log('[Firebase] Attempting invisible reCAPTCHA fallback...');
-            const container = document.getElementById('recaptcha-container-auto');
-            
-            // Clear existing verifier
-            if (window.firebaseRecaptchaVerifier) {
-                try {
-                    window.firebaseRecaptchaVerifier.clear();
-                } catch (e) {
-                    console.warn('[Firebase] Error clearing verifier:', e);
-                }
-                window.firebaseRecaptchaVerifier = null;
-            }
+        function setupRecaptcha() {
+            console.log('Setting up reCAPTCHA...');
+            const container = document.getElementById('recaptcha-container');
             
             try {
-                // Create invisible reCAPTCHA bound to Send OTP button
-                window.firebaseRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('firebase-send-otp-btn', {
-                    'size': 'invisible',
-                    'callback': function(response) {
-                        console.log('[Firebase] Invisible reCAPTCHA solved:', response);
-                        container.innerHTML = '<div style="text-align: center; color: #28a745;"><i class="fa-solid fa-check-circle"></i><br>Invisible reCAPTCHA ready</div>';
-                        updateFirebaseStatus('Security verification ready. You can now send OTP.', 'success');
+                // Clear any existing verifier
+                if (window.recaptchaVerifier) {
+                    window.recaptchaVerifier.clear();
+                    window.recaptchaVerifier = null;
+                }
+                
+                container.innerHTML = '<div style="text-align: center; color: #007bff;"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Initializing reCAPTCHA...</div>';
+                
+                // Create reCAPTCHA verifier
+                window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier('recaptcha-container', {
+                    'size': 'normal',
+                    'callback': (response) => {
+                        console.log('reCAPTCHA solved:', response);
+                        updatePhoneStatus('reCAPTCHA verified! You can now send OTP.', 'success');
+                    },
+                    'expired-callback': () => {
+                        console.warn('reCAPTCHA expired');
+                        updatePhoneStatus('reCAPTCHA expired. Please solve it again.', 'error');
+                    },
+                    'error-callback': (error) => {
+                        console.error('reCAPTCHA error:', error);
+                        updatePhoneStatus('reCAPTCHA error occurred. Please try again.', 'error');
                     }
+                }, window.firebaseAuth);
+                
+                console.log('reCAPTCHA verifier created successfully');
+                
+                // Render the reCAPTCHA
+                window.recaptchaVerifier.render().then((widgetId) => {
+                    window.recaptchaWidgetId = widgetId;
+                    console.log('reCAPTCHA rendered successfully, Widget ID:', widgetId);
+                    updatePhoneStatus('reCAPTCHA loaded successfully! Please solve it to continue.', 'success');
+                }).catch((error) => {
+                    console.error('reCAPTCHA render failed:', error);
+                    container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle" style="margin-right: 8px;"></i>Failed to load reCAPTCHA<br><button onclick="retryRecaptcha()" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button></div>';
+                    updatePhoneStatus('Failed to load reCAPTCHA: ' + error.message, 'error');
                 });
                 
-                console.log('[Firebase] Invisible reCAPTCHA created successfully');
-                container.innerHTML = '<div style="text-align: center; color: #28a745;"><i class="fa-solid fa-shield-alt"></i><br>Security verification ready<br><small>Click "Send OTP" to continue</small></div>';
-                updateFirebaseStatus('Security verification ready. Enter phone number and send OTP.', 'success');
-                
             } catch (error) {
-                console.error('[Firebase] Invisible reCAPTCHA also failed:', error);
-                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle"></i><br>All reCAPTCHA methods failed<br><button onclick="location.reload()" style="margin-top: 5px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Refresh Page</button></div>';
-                updateFirebaseStatus('All reCAPTCHA methods failed. Please refresh the page.', 'error');
+                console.error('reCAPTCHA setup failed:', error);
+                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle" style="margin-right: 8px;"></i>Setup failed<br><button onclick="retryRecaptcha()" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button></div>';
+                updatePhoneStatus('reCAPTCHA setup failed: ' + error.message, 'error');
             }
         }
-
-        function sendFirebaseOTP() {
-            console.log('[Firebase] Sending OTP...');
-            const phoneInput = document.getElementById('firebase-phone-input');
-            const sendBtn = document.getElementById('firebase-send-otp-btn');
+        
+        function retryRecaptcha() {
+            console.log('Retrying reCAPTCHA setup...');
+            setupRecaptcha();
+        }        // Send OTP function - Firebase implementation with reCAPTCHA
+        function sendOTP() {
+            const phoneInput = document.getElementById('phone-input');
+            const sendBtn = document.getElementById('send-otp-btn');
             
             if (!phoneInput || !sendBtn) {
-                console.error('[Firebase] Required elements not found');
+                console.error('Required elements not found');
                 return;
             }
 
@@ -1302,39 +1238,40 @@
             
             // Validate phone number format
             if (!/^\d{10}$/.test(phoneNumber)) {
-                updateFirebaseStatus('Please enter a valid 10-digit phone number', 'error');
+                updatePhoneStatus('Please enter a valid 10-digit phone number', 'error');
                 phoneInput.focus();
                 return;
             }
             
             const formattedPhone = '+91' + phoneNumber;
-            console.log('[Firebase] Sending OTP to:', formattedPhone);
+            console.log('Sending OTP to:', formattedPhone);
 
-            if (!window.firebaseRecaptchaVerifier) {
-                updateFirebaseStatus('reCAPTCHA not initialized. Please refresh the page.', 'error');
+            // Check if reCAPTCHA is ready
+            if (!window.recaptchaVerifier) {
+                updatePhoneStatus('reCAPTCHA not initialized. Please wait or refresh the page.', 'error');
                 return;
             }
 
             // Update UI
             sendBtn.disabled = true;
             sendBtn.textContent = 'Sending...';
-            updateFirebaseStatus('Sending OTP...', 'info');
+            updatePhoneStatus('Sending OTP...', 'info');
 
-            // Send OTP using Firebase
-            firebase.auth().signInWithPhoneNumber(formattedPhone, window.firebaseRecaptchaVerifier)
-                .then(function(confirmationResult) {
-                    console.log('[Firebase] OTP sent successfully:', confirmationResult);
-                    window.firebaseConfirmationResult = confirmationResult;
+            // Use Firebase Auth to send OTP
+            window.firebaseSignInWithPhoneNumber(window.firebaseAuth, formattedPhone, window.recaptchaVerifier)
+                .then((confirmationResult) => {
+                    console.log('OTP sent successfully:', confirmationResult);
+                    window.confirmationResult = confirmationResult;
                     
-                    updateFirebaseStatus(`OTP sent to ${formattedPhone}`, 'success');
-                    document.getElementById('firebase-otp-input-container').style.display = 'block';
-                    document.getElementById('firebase-otp-input').focus();
+                    updatePhoneStatus(`OTP sent to ${formattedPhone}`, 'success');
+                    document.getElementById('otp-input-container').style.display = 'block';
+                    document.getElementById('otp-input').focus();
                     
                     phoneInput.disabled = true;
                     sendBtn.textContent = 'OTP Sent';
                 })
-                .catch(function(error) {
-                    console.error('[Firebase] Failed to send OTP:', error);
+                .catch((error) => {
+                    console.error('Failed to send OTP:', error);
                     
                     let errorMessage = 'Failed to send OTP';
                     switch(error.code) {
@@ -1347,57 +1284,59 @@
                         case 'auth/captcha-check-failed':
                             errorMessage = 'reCAPTCHA verification failed. Please try again.';
                             // Re-initialize reCAPTCHA on failure
-                            setTimeout(initializeFirebaseRecaptcha, 1000);
+                            setTimeout(retryRecaptcha, 1000);
                             break;
                         default:
                             errorMessage = error.message;
                     }
                     
-                    updateFirebaseStatus(errorMessage, 'error');
+                    updatePhoneStatus(errorMessage, 'error');
                     sendBtn.disabled = false;
                     sendBtn.textContent = 'Send OTP';
                 });
-        }
-
-        function verifyFirebaseOTP() {
-            console.log('[Firebase] Verifying OTP...');
-            const otpInput = document.getElementById('firebase-otp-input');
-            const verifyBtn = document.getElementById('firebase-verify-otp-btn');
+        }        // Verify OTP function - Firebase implementation
+        function verifyOTP() {
+            const otpInput = document.getElementById('otp-input');
+            const verifyBtn = document.getElementById('verify-otp-btn');
             
             if (!otpInput || !verifyBtn) {
-                console.error('[Firebase] Required elements not found');
+                console.error('Required elements not found');
                 return;
             }
 
             const otpCode = otpInput.value.trim();
             if (!/^\d{6}$/.test(otpCode)) {
-                updateFirebaseOtpStatus('Please enter a valid 6-digit OTP', 'error');
+                updateOtpStatus('Please enter a valid 6-digit OTP', 'error');
                 otpInput.focus();
                 return;
             }
 
-            if (!window.firebaseConfirmationResult) {
-                updateFirebaseOtpStatus('No OTP session found. Please send OTP first.', 'error');
+            if (!window.confirmationResult) {
+                updateOtpStatus('No OTP session found. Please send OTP first.', 'error');
                 return;
             }
 
             verifyBtn.disabled = true;
             verifyBtn.textContent = 'Verifying...';
-            updateFirebaseOtpStatus('Verifying OTP...', 'info');
+            updateOtpStatus('Verifying OTP...', 'info');
 
-            window.firebaseConfirmationResult.confirm(otpCode)
-                .then(function(result) {
-                    console.log('[Firebase] OTP verified successfully:', result.user);
+            // Verify OTP using Firebase
+            window.confirmationResult.confirm(otpCode)
+                .then((result) => {
+                    console.log('OTP verified successfully:', result.user);
                     
-                    updateFirebaseOtpStatus('Phone verified successfully!', 'success');
-                    window.isFirebasePhoneVerified = true;
+                    updateOtpStatus('Phone verified successfully!', 'success');
+                    window.isPhoneVerified = true;
                     
                     otpInput.disabled = true;
                     verifyBtn.textContent = 'Verified';
-                    document.getElementById('firebase-send-otp-btn').disabled = true;
+                    document.getElementById('send-otp-btn').disabled = true;
+                    
+                    // Show success message
+                    updatePhoneStatus('Phone number verified successfully! You can now proceed with payment.', 'success');
                 })
-                .catch(function(error) {
-                    console.error('[Firebase] OTP verification failed:', error);
+                .catch((error) => {
+                    console.error('OTP verification failed:', error);
                     
                     let errorMessage = 'Verification failed';
                     switch(error.code) {
@@ -1411,412 +1350,33 @@
                             errorMessage = error.message;
                     }
                     
-                    updateFirebaseOtpStatus(errorMessage, 'error');
+                    updateOtpStatus(errorMessage, 'error');
                     verifyBtn.disabled = false;
                     verifyBtn.textContent = 'Verify OTP';
-                    window.isFirebasePhoneVerified = false;
+                    window.isPhoneVerified = false;
                 });
         }
 
-        function updateFirebaseStatus(message, type) {
-            const statusElement = document.getElementById('firebase-phone-status-new');
+        function updatePhoneStatus(message, type) {
+            const statusElement = document.getElementById('phone-status');
             if (statusElement) {
                 statusElement.textContent = message;
                 statusElement.className = type;
             }
-            console.log(`[Firebase Status]: ${message}`);
+            console.log(`Phone Status: ${message}`);
         }
 
-        function updateFirebaseOtpStatus(message, type) {
-            const statusElement = document.getElementById('firebase-otp-status-new');
+        function updateOtpStatus(message, type) {
+            const statusElement = document.getElementById('otp-status');
             if (statusElement) {
                 statusElement.textContent = message;
                 statusElement.className = type;
             }
-            console.log(`[Firebase OTP]: ${message}`);
-        }
-        
-        function updateRecaptchaContainer(status, message) {
-            const container = document.getElementById('recaptcha-container-new');
-            if (!container) return;
-            
-            container.className = status; // loading, success, error
-            
-            if (status === 'loading') {
-                container.innerHTML = `
-                    <div>
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                        <p style="margin: 5px 0 0 0; font-size: 14px;">${message}</p>
-                    </div>
-                `;
-            } else if (status === 'error') {
-                container.innerHTML = `
-                    <div>
-                        <i class="fa-solid fa-exclamation-triangle" style="color: #dc3545;"></i>
-                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #dc3545;">${message}</p>
-                        <button onclick="retryRecaptcha()" style="margin-top: 10px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
-                    </div>
-                `;
-            } else if (status === 'success') {
-                container.innerHTML = `
-                    <div>
-                        <i class="fa-solid fa-check-circle" style="color: #28a745;"></i>
-                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #28a745;">${message}</p>
-                    </div>
-                `;
-            }
-        }        function initializeNewRecaptcha() {
-            console.log('[RECAPTCHA] Starting initialization attempt', ++window.recaptchaAttempts);
-            updateRecaptchaContainer('loading', `Initializing reCAPTCHA... (Attempt ${window.recaptchaAttempts})`);
-            
-            // Detailed Firebase checks with specific error messages
-            console.log('[RECAPTCHA] Checking Firebase availability...');
-            console.log('[RECAPTCHA] window.firebase:', typeof firebase);
-            console.log('[RECAPTCHA] firebase object:', firebase);
-            
-            if (typeof firebase === 'undefined') {
-                console.error('[RECAPTCHA] Firebase not loaded - firebase is undefined');
-                updateRecaptchaContainer('error', 'Firebase SDK not loaded. Check internet connection.');
-                return;
-            }
-            
-            console.log('[RECAPTCHA] firebase.auth:', firebase.auth);
-            if (!firebase.auth) {
-                console.error('[RECAPTCHA] Firebase Auth not available - firebase.auth is undefined');
-                updateRecaptchaContainer('error', 'Firebase Auth not available. Check Firebase SDK.');
-                return;
-            }
-            
-            console.log('[RECAPTCHA] firebase.auth():', firebase.auth());
-            console.log('[RECAPTCHA] firebase.auth.RecaptchaVerifier:', firebase.auth.RecaptchaVerifier);
-            if (!firebase.auth.RecaptchaVerifier) {
-                console.error('[RECAPTCHA] RecaptchaVerifier not available');
-                updateRecaptchaContainer('error', 'RecaptchaVerifier not available. Check Firebase Auth SDK.');
-                return;
-            }
-            
-            // Clear existing verifier
-            if (window.newRecaptchaVerifier) {
-                try {
-                    window.newRecaptchaVerifier.clear();
-                    console.log('[RECAPTCHA] Cleared existing verifier');
-                } catch (e) {
-                    console.warn('[RECAPTCHA] Error clearing verifier:', e);
-                }
-                window.newRecaptchaVerifier = null;
-            }
-            
-            // Create container element for reCAPTCHA widget
-            const container = document.getElementById('recaptcha-container-new');
-            if (!container) {
-                console.error('[RECAPTCHA] Container element not found');
-                updateNewFirebasePhoneStatus('reCAPTCHA container missing', 'error');
-                return;
-            }
-              // Clear container and prepare for reCAPTCHA widget
-            container.innerHTML = '<div style="min-height: 78px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-spinner fa-spin"></i> Rendering reCAPTCHA...</div>';
-            container.className = 'loading';
-            
-            // Add detailed logging for reCAPTCHA creation
-            console.log('[RECAPTCHA] About to create RecaptchaVerifier...');
-            console.log('[RECAPTCHA] Container element:', container);
-            console.log('[RECAPTCHA] Container ID:', container.id);
-            
-            try {
-                console.log('[RECAPTCHA] Creating RecaptchaVerifier with options...');
-                window.newRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container-new', {
-                    'size': 'normal',
-                    'callback': function(response) {
-                        console.log('[RECAPTCHA] Solved successfully:', response);
-                        updateNewFirebasePhoneStatus('reCAPTCHA verified! You can now send OTP.', 'success');
-                        window.recaptchaInitialized = true;
-                    },
-                    'expired-callback': function() {
-                        console.warn('[RECAPTCHA] Expired');
-                        updateNewFirebasePhoneStatus('reCAPTCHA expired. Please solve it again.', 'error');
-                        window.recaptchaInitialized = false;
-                    },
-                    'error-callback': function(error) {
-                        console.error('[RECAPTCHA] Error callback:', error);
-                        updateRecaptchaContainer('error', 'reCAPTCHA error occurred');
-                        window.recaptchaInitialized = false;
-                    }
-                });
-                
-                console.log('[RECAPTCHA] RecaptchaVerifier created successfully!');
-                console.log('[RECAPTCHA] Verifier object:', window.newRecaptchaVerifier);
-                console.log('[RECAPTCHA] Now calling render()...');
-                
-                // Add timeout for render to prevent infinite hanging
-                const renderTimeout = setTimeout(() => {
-                    console.error('[RECAPTCHA] Render timeout - reCAPTCHA took too long to load');
-                    updateRecaptchaContainer('error', 'reCAPTCHA load timeout. Check your internet connection.');
-                }, 10000); // 10 second timeout
-                
-                window.newRecaptchaVerifier.render().then(function(widgetId) {
-                    clearTimeout(renderTimeout);
-                    console.log('[RECAPTCHA] Rendered successfully! Widget ID:', widgetId);
-                    updateRecaptchaContainer('success', 'reCAPTCHA loaded successfully');
-                    updateNewFirebasePhoneStatus('reCAPTCHA is ready. Enter your phone number and click Send OTP.', 'info');
-                    window.recaptchaInitialized = true;
-                }).catch(function(error) {
-                    clearTimeout(renderTimeout);
-                    console.error('[RECAPTCHA] Render failed:', error);
-                    console.error('[RECAPTCHA] Error details:', {
-                        code: error.code,
-                        message: error.message,
-                        stack: error.stack
-                    });
-                    updateRecaptchaContainer('error', `Render failed: ${error.message || 'Unknown error'}`);
-                    updateNewFirebasePhoneStatus(`reCAPTCHA render error: ${error.message}`, 'error');
-                    window.recaptchaInitialized = false;
-                    
-                    // Try alternative approach on render failure
-                    if (window.recaptchaAttempts < 3) {
-                        setTimeout(() => {
-                            console.log('[RECAPTCHA] Trying alternative invisible reCAPTCHA...');
-                            tryInvisibleRecaptcha();
-                        }, 2000);
-                    }
-                });
-                
-            } catch (error) {
-                console.error('[RECAPTCHA] Creation failed:', error);
-                console.error('[RECAPTCHA] Creation error details:', {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack
-                });
-                updateRecaptchaContainer('error', `Creation failed: ${error.message}`);
-                updateNewFirebasePhoneStatus(`reCAPTCHA creation error: ${error.message}`, 'error');
-                window.recaptchaInitialized = false;
-            }
-        }
-        
-        // Alternative invisible reCAPTCHA as fallback
-        function tryInvisibleRecaptcha() {
-            console.log('[RECAPTCHA] Trying invisible reCAPTCHA as fallback...');
-            updateRecaptchaContainer('loading', 'Trying invisible reCAPTCHA...');
-            
-            // Clear existing verifier
-            if (window.newRecaptchaVerifier) {
-                try {
-                    window.newRecaptchaVerifier.clear();
-                } catch (e) {
-                    console.warn('[RECAPTCHA] Error clearing verifier:', e);
-                }
-                window.newRecaptchaVerifier = null;
-            }
-            
-            try {
-                // Create invisible reCAPTCHA bound to Send OTP button
-                window.newRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('firebase-send-otp-btn', {
-                    'size': 'invisible',
-                    'callback': function(response) {
-                        console.log('[RECAPTCHA] Invisible reCAPTCHA solved:', response);
-                        updateRecaptchaContainer('success', 'Invisible reCAPTCHA ready');
-                        window.recaptchaInitialized = true;
-                    }
-                });
-                
-                console.log('[RECAPTCHA] Invisible reCAPTCHA created successfully');
-                updateRecaptchaContainer('success', 'Invisible reCAPTCHA ready - you can send OTP');
-                updateNewFirebasePhoneStatus('Invisible reCAPTCHA ready. Enter phone number and send OTP.', 'info');
-                window.recaptchaInitialized = true;
-                
-            } catch (error) {
-                console.error('[RECAPTCHA] Invisible reCAPTCHA also failed:', error);
-                updateRecaptchaContainer('error', 'All reCAPTCHA methods failed. Please refresh the page.');
-            }
-        }
-        
-        function retryRecaptcha() {
-            console.log('[RECAPTCHA] Manual retry requested');
-            if (window.recaptchaAttempts < 5) {
-                setTimeout(initializeNewRecaptcha, 1000);
-            } else {
-                updateRecaptchaContainer('error', 'Too many attempts. Please refresh the page.');
-            }
-        }
-
-        function sendNewFirebaseOTP() {
-            console.log('[OTP] Send OTP called');
-            const phoneInputElement = document.getElementById('firebase-phone-input');
-            const sendOtpBtn = document.getElementById('firebase-send-otp-btn');
-            
-            if (!phoneInputElement || !sendOtpBtn) {
-                console.error('[OTP] Required elements not found');
-                return;
-            }
-
-            let phoneNumber = phoneInputElement.value.trim();
-            console.log('[OTP] Phone number:', phoneNumber);
-
-            if (!/^\d{10}$/.test(phoneNumber)) {
-                updateNewFirebasePhoneStatus('Please enter a valid 10-digit Indian mobile number.', 'error');
-                phoneInputElement.focus();
-                return;
-            }
-            
-            const formattedPhoneNumber = '+91' + phoneNumber;
-            console.log('[OTP] Formatted phone number:', formattedPhoneNumber);
-
-            if (!window.newRecaptchaVerifier) {
-                updateNewFirebasePhoneStatus('reCAPTCHA not initialized. Please wait or refresh the page.', 'error');
-                return;
-            }
-            
-            if (!window.recaptchaInitialized) {
-                updateNewFirebasePhoneStatus('Please solve the reCAPTCHA first.', 'error');
-                return;
-            }
-
-            sendOtpBtn.disabled = true;
-            sendOtpBtn.textContent = 'Sending...';
-            updateNewFirebasePhoneStatus('Sending OTP...', 'info');
-
-            firebase.auth().signInWithPhoneNumber(formattedPhoneNumber, window.newRecaptchaVerifier)
-                .then((confirmationResult) => {
-                    console.log('[OTP] OTP sent successfully:', confirmationResult);
-                    window.newConfirmationResult = confirmationResult;
-                    updateNewFirebasePhoneStatus(`OTP sent to ${formattedPhoneNumber}`, 'success');
-                    document.getElementById('firebase-otp-input-container').style.display = 'block';
-                    document.getElementById('firebase-otp-input').focus();
-                    phoneInputElement.disabled = true;
-                    sendOtpBtn.textContent = 'OTP Sent';
-                })
-                .catch((error) => {
-                    console.error('[OTP] Send failed:', error);
-                    let errorMsg = `Failed to send OTP: ${error.message}`;
-                    
-                    switch(error.code) {
-                        case 'auth/too-many-requests':
-                            errorMsg = 'Too many requests. Please try again later.';
-                            break;
-                        case 'auth/invalid-phone-number':
-                            errorMsg = 'Invalid phone number format.';
-                            break;
-                        case 'auth/captcha-check-failed':
-                            errorMsg = 'reCAPTCHA verification failed. Please try again.';
-                            // Reinitialize reCAPTCHA
-                            setTimeout(initializeNewRecaptcha, 1000);
-                            break;
-                    }
-                      updateFirebaseStatus(errorMessage, 'error');
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = 'Send OTP';
-                });
-        }
-        
-        // Event listeners and initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[Firebase] Setting up event listeners...');
-            
-            // Add event listeners for Firebase OTP buttons
-            const sendBtn = document.getElementById('firebase-send-otp-btn');
-            if (sendBtn) {
-                sendBtn.addEventListener('click', sendFirebaseOTP);
-            }
-
-            const verifyBtn = document.getElementById('firebase-verify-otp-btn');
-            if (verifyBtn) {
-                verifyBtn.addEventListener('click', verifyFirebaseOTP);
-            }
-
-            // Initialize reCAPTCHA immediately
-            console.log('[Firebase] Starting immediate reCAPTCHA initialization...');
-            initializeFirebaseRecaptcha();
-        });
-        
-        // Also try to initialize when Firebase scripts are fully loaded
-        window.addEventListener('load', function() {
-            console.log('[Firebase] Window loaded, checking reCAPTCHA status...');
-            if (!window.firebaseRecaptchaVerifier) {
-                console.log('[Firebase] reCAPTCHA not initialized yet, retrying...');
-                setTimeout(initializeFirebaseRecaptcha, 500);
-            }
-        });
-
-        /* Fast2SMS OTP Functions (Commented out) */
-        // let generatedOTP = null; // Store generated OTP
-        // let isOTPVerified = false; // Flag to track OTP verification status
-
-        // async function sendOTP() {
-        //     const phoneInput = document.getElementById('phone');
-        //     const phoneStatus = document.getElementById('phone-status');
-        //     const otpInputGroup = document.getElementById('otp-input-group');
-        //     const phoneNumber = phoneInput.value.trim();
-
-        //     if (!/^\d{10}$/.test(phoneNumber)) {
-        //         phoneStatus.textContent = 'Please enter a valid 10-digit phone number.';
-        //         phoneStatus.className = 'error';
-        //         return;
-        //     }
-
-        //     phoneStatus.textContent = 'Sending OTP...';
-        //     phoneStatus.className = '';
-
-        //     try {
-        //         // Simulate OTP generation for client-side demo (replace with actual backend call)
-        //         generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
-        //         console.log(`Simulated OTP for ${phoneNumber}: ${generatedOTP}`); // For testing
-
-        //         // Simulate API call to Fast2SMS (replace with actual implementation if needed)
-        //         // This is a placeholder. In a real scenario, this would be a server-side call.
-        //         // const response = await fetch('/send-otp', { // Example endpoint
-        //         //     method: 'POST',
-        //         //     headers: { 'Content-Type': 'application/json' },
-        //         //     body: JSON.stringify({ phoneNumber: phoneNumber, otp: generatedOTP }) 
-        //         // });
-        //         // const data = await response.json();
-
-        //         // if (data.success) { // Assuming your backend returns a success flag
-        //         phoneStatus.textContent = `OTP sent to ${phoneNumber}.`;
-        //         phoneStatus.className = 'success';
-        //         otpInputGroup.style.display = 'block';
-        //         // } else {
-        //         //     phoneStatus.textContent = data.message || 'Failed to send OTP. Please try again.';
-        //         //     phoneStatus.className = 'error';
-        //         // }
-        //     } catch (error) {
-        //         console.error('Error sending OTP:', error);
-        //         phoneStatus.textContent = 'Failed to send OTP. Check console for details.';
-        //         phoneStatus.className = 'error';
-        //     }
-        // }
-
-        // function verifyOTP() {
-        //     const otpInput = document.getElementById('otp');
-        //     const otpStatus = document.getElementById('otp-status');
-        //     const enteredOTP = otpInput.value.trim();
-
-        //     if (!generatedOTP) {
-        //         otpStatus.textContent = 'Please send OTP first.';
-        //         otpStatus.className = 'error';
-        //         return;
-        //     }
-
-        //     if (enteredOTP === generatedOTP) {
-        //         otpStatus.textContent = 'OTP verified successfully!';
-        //         otpStatus.className = 'success';
-        //         isOTPVerified = true; 
-        //         // Disable OTP fields after successful verification
-        //         document.getElementById('phone').disabled = true;
-        //         document.getElementById('otp').disabled = true;
-        //         document.querySelector('#phone-input-group button').disabled = true; // Send OTP button
-        //         document.querySelector('#otp-input-group button').disabled = true;   // Verify OTP button
-        //     } else {
-        //         otpStatus.textContent = 'Invalid OTP. Please try again.';
-        //         otpStatus.className = 'error';
-        //         isOTPVerified = false;
-        //     }
-        // }        // Initialize payment page (display cart, totals, etc.)
+            console.log(`OTP Status: ${message}`);
+        }        // Initialize payment page
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded and parsed.");
-            // Wait a bit for Firebase to load, then initialize reCAPTCHA
-            // setTimeout(() => {
-            // initializeRecaptcha();
-            // }, 500);
+            
             displayCartItemsOnPayment();
             
             // Load order summary
@@ -1830,9 +1390,24 @@
             
             // Setup payment method selection
             setupPaymentMethods();
-              // Setup form validation
+            
+            // Setup form validation
             setupFormValidation();
-        });        // Fast2SMS OTP Functions
+            
+            // Initialize phone verification
+            initializeRecaptcha();
+            
+            // Setup OTP button event listeners
+            const sendBtn = document.getElementById('send-otp-btn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendOTP);
+            }
+
+            const verifyBtn = document.getElementById('verify-otp-btn');
+            if (verifyBtn) {
+                verifyBtn.addEventListener('click', verifyOTP);
+            }
+        });// Fast2SMS OTP Functions
         async function sendOTP() {
             const phoneInput = document.getElementById('phone');
             const sendOtpBtn = document.getElementById('send-otp-btn');
