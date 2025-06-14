@@ -638,30 +638,32 @@
         [data-theme="dark"] .no-results {
             color: var(--primary-peach);
             opacity: 0.7;
-        }
-        /* PRODUCT GRID */
+        }        /* MYNTRA-STYLE PRODUCT GRID */
         .products {
-            padding: 80px 0;
+            padding: 60px 0;
+            background: #f8f8f8;
         }
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }        .product-card {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }/* MYNTRA-STYLE CLEAN PRODUCT CARDS */
+        .product-card {
             background: var(--bg-color);
-            border-radius: 15px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            cursor: pointer; /* Pointer cursor indicates clickable */
-            position: relative; /* Needed for hover effect */
+            text-align: left;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid #f0f0f0;
         }
         
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
         }
         
         /* Highlight animation for search results */
@@ -673,97 +675,102 @@
         
         .highlight-product {
             animation: highlight-pulse 1.5s ease-in-out;
-            transform: translateY(-10px) !important;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.15) !important;
             z-index: 10;
             position: relative;
         }
         
         [data-theme="dark"] .product-card {
-            background: rgba(1, 51, 40, 0.85); /* Slightly lighter dark green */
-            border: 1px solid rgba(227, 220, 210, 0.1); /* Subtle beige border */
+            background: rgba(1, 51, 40, 0.85);
+            border: 1px solid rgba(227, 220, 210, 0.1);
         }
         
         [data-theme="dark"] .product-card:hover {
-            box-shadow: 0 8px 25px rgba(204, 139, 101, 0.15); /* Copper shadow */
-        }        .product-image-container {
+            box-shadow: 0 2px 16px rgba(204, 139, 101, 0.15);
+        }
+
+        .product-image-container {
             position: relative;
-            height: 300px; /* Fixed height for consistency */
-            overflow: hidden; /* Hide overflow */
+            height: 280px;
+            overflow: hidden;
+            background: #fafafa;
         }
         
         .product-image-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Maintain aspect ratio and cover container */
-            object-position: center; /* Center the image */
+            object-fit: cover;
+            object-position: center top;
             transition: transform 0.3s ease;
         }
         
         .product-card:hover .product-image-container img {
-            transform: scale(1.05); /* Subtle zoom effect on hover */
+            transform: scale(1.02);
         }
         
-        .product-image-container        .btn-add-to-cart {
+        /* Myntra-style Add to Cart Button */
+        .product-image-container .btn-add-to-cart {
             position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
             opacity: 0;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-            background-color: var(--accent-coral);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            background-color: #fff;
+            color: #282c3f;
+            padding: 8px 16px;
+            border-radius: 4px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            z-index: 2; /* Ensure it's above the image */
-            min-height: 44px; /* Touch-friendly minimum size */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
+            text-align: center;
+            border: 1px solid #d4edda;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .product-card:hover .btn-add-to-cart {
             opacity: 1;
-            bottom: 30px;
+            visibility: visible;
         }
 
-        /* Touch device improvements */
+        /* Touch device improvements - Myntra style */
         @media (hover: none) and (pointer: coarse) {
             .btn-add-to-cart {
-                opacity: 1 !important;
-                bottom: 15px !important;
-                position: relative;
-                transform: none !important;
-                margin: 10px auto 0 auto;
-                width: calc(100% - 20px);
-                max-width: 200px;
-            }
-            
-            .product-image-container {
-                padding-bottom: 50px; /* Make space for always-visible button */
+                opacity: 0 !important;
+                visibility: hidden !important;
             }
             
             .product-card:hover {
-                transform: none; /* Disable hover transform on touch devices */
+                box-shadow: none;
             }
         }
 
+        /* Myntra-style Product Info */
         .product-info {
-            padding: 20px;
+            padding: 12px;
+            background: #fff;
         }
 
         .product-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+            color: #282c3f;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .product-price {
-            font-size: 1.3rem;
+            font-size: 0.875rem;
             font-weight: 700;
-            color: var(--accent-coral);
+            color: #282c3f;
+            margin: 0;
         }
 
         /* OFFERS SECTION */
@@ -1243,17 +1250,17 @@
             .hero-slide .hero-text { order: 2; text-align: center; padding: 10px 0; max-width: 100%; }
             .hero-slide .hero-image { order: 1; margin-bottom: 10px; max-width: 100%; }
             .hero-slide .hero-buttons { justify-content: center; gap: 10px; }
-            .hero-image img { max-height: 350px; object-fit: contain; }            
-            /* Our Bestsellers - Tablet view */
+            .hero-image img { max-height: 350px; object-fit: contain; }              /* Our Bestsellers - Tablet view */
             .product-grid { 
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                padding: 0 20px;
             }
             .product-card {
-                border-radius: 12px;
+                border-radius: 6px;
             }
             .product-info {
-                padding: 15px;
+                padding: 10px;
             }
             
             .category-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1271,37 +1278,37 @@
             .about-image { order: 1; margin-bottom: 30px; }
             .newsletter-form { flex-direction: column; align-items: center; }
             .newsletter-form input { width: 100%; max-width: 300px; }
-            
-            /* Our Bestsellers - Mobile view */
+              /* Our Bestsellers - Mobile view */
             .products {
-                padding: 50px 0;
+                padding: 40px 0;
+                background: #fff;
             }
             .products .section-title {
-                font-size: 2rem;
-                margin-bottom: 30px;
+                font-size: 1.8rem;
+                margin-bottom: 20px;
             }
             .product-grid { 
                 grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-                padding: 0 10px;
+                gap: 12px;
+                padding: 0 15px;
             }
             .product-card {
-                border-radius: 10px;
-                transform: none !important; /* Disable hover transform on mobile */
+                border-radius: 6px;
+                border: 1px solid #e8e8e8;
             }
             .product-image-container {
                 height: 200px;
             }
             .product-info {
-                padding: 12px;
+                padding: 8px;
             }
             .product-info h3 {
-                font-size: 1rem;
-                margin-bottom: 6px;
+                font-size: 0.8rem;
+                margin-bottom: 3px;
                 line-height: 1.2;
             }
             .product-price {
-                font-size: 1.1rem;
+                font-size: 0.85rem;
                 font-weight: 700;
             }
             /* Make add to cart button always visible on mobile */
@@ -1315,39 +1322,38 @@
         }
 
         /* Mobile Phone - Portrait (max-width: 576px) */        
-        @media (max-width: 576px) {
-            /* Our Bestsellers - Small mobile phones */
+        @media (max-width: 576px) {            /* Our Bestsellers - Small mobile phones */
             .products {
-                padding: 40px 0;
+                padding: 30px 0;
+                background: #fff;
             }
             .products .section-title {
-                font-size: 1.8rem;
-                margin-bottom: 25px;
+                font-size: 1.6rem;
+                margin-bottom: 15px;
             }
             .product-grid { 
                 grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                padding: 0 8px;
+                gap: 10px;
+                padding: 0 10px;
             }
             .product-card {
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 4px;
+                border: 1px solid #e8e8e8;
             }
             .product-image-container {
-                height: 180px;
+                height: 160px;
             }
             .product-info {
-                padding: 10px 8px;
+                padding: 6px;
             }
             .product-info h3 {
-                font-size: 0.9rem;
-                margin-bottom: 4px;
-                font-weight: 600;
+                font-size: 0.75rem;
+                margin-bottom: 2px;
+                font-weight: 400;
             }
             .product-price {
-                font-size: 1rem;
+                font-size: 0.8rem;
                 font-weight: 700;
-                color: var(--accent-coral);
             }
             .btn-add-to-cart {
                 padding: 6px 10px;
@@ -1434,26 +1440,28 @@
         }
 
         /* Very Small Mobile Phones (max-width: 360px) */
-        @media (max-width: 360px) {
-            .products .section-title {
+        @media (max-width: 360px) {            .products .section-title {
                 font-size: 1.4rem;
-                margin-bottom: 15px;
+                margin-bottom: 12px;
             }
             .product-grid { 
                 gap: 8px;
+                padding: 0 8px;
             }
             .product-image-container {
                 height: 140px;
             }
             .product-info {
-                padding: 6px 4px;
+                padding: 4px;
             }
             .product-info h3 {
-                font-size: 0.8rem;
-                margin-bottom: 2px;
+                font-size: 0.7rem;
+                margin-bottom: 1px;
+                font-weight: 400;
             }
             .product-price {
-                font-size: 0.9rem;
+                font-size: 0.75rem;
+                font-weight: 700;
             }
             .btn-add-to-cart {
                 padding: 4px 6px;
@@ -1718,9 +1726,8 @@
                         <div class="product-image-container">
                             <img src="https://placehold.co/400x500/F8C8DC/36454F?text=Kurti+Style+1" alt="Pastel Pink Kurti" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/333333?text=Image';">
                             <a href="#" class="btn-add-to-cart">Add to Cart</a>
-                        </div>
-                        <div class="product-info">
-                            <h3>Pastel Pink Cotton Kurti</h3>
+                        </div>                        <div class="product-info">
+                            <h3>Pink Cotton Kurti</h3>
                             <p class="product-price">₹300</p>
                         </div>
                     </div>
@@ -1742,7 +1749,7 @@
                              <a href="#" class="btn-add-to-cart">Add to Cart</a>
                         </div>
                         <div class="product-info">
-                            <h3>Classic White Kurti</h3>
+                            <h3>White Kurti</h3>
                             <p class="product-price">₹300</p>
                         </div>
                     </div>
@@ -1753,7 +1760,7 @@
                              <a href="#" class="btn-add-to-cart">Add to Cart</a>
                         </div>
                         <div class="product-info">
-                            <h3>Sea Green Daily Wear Kurti</h3>
+                            <h3>Green Kurti</h3>
                             <p class="product-price">₹300</p>
                         </div>
                     </div>
@@ -1764,7 +1771,7 @@
                              <a href="#" class="btn-add-to-cart">Add to Cart</a>
                         </div>
                         <div class="product-info">
-                            <h3>Coral Print Party Kurti</h3>
+                            <h3>Coral Print Kurti</h3>
                             <p class="product-price">₹300</p>
                         </div>
                     </div>
@@ -1775,7 +1782,7 @@
                              <a href="#" class="btn-add-to-cart">Add to Cart</a>
                         </div>
                         <div class="product-info">
-                            <h3>Lavender Long Kurti</h3>
+                            <h3>Lavender Kurti</h3>
                             <p class="product-price">₹300</p>
                         </div>
                     </div>
