@@ -1155,27 +1155,33 @@
         function initializeRecaptcha() {
             const container = document.getElementById('recaptcha-container');
             if (!container) {
-                console.error('reCAPTCHA container not found.');
-                updatePhoneStatus('Error: reCAPTCHA UI element missing.', 'error');
+                console.error('reCAPTCHA container not found');
                 return;
             }
             
             container.innerHTML = '<div style="text-align: center; color: #666;"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Loading Firebase SDK...</div>';
             updatePhoneStatus('Initializing phone verification system...', 'info');
             
+            // Diagnostic check for Firebase and domain
+            if (window.location.protocol === 'file:') {
+                container.innerHTML = '<div style="text-align: center; color: #dc3545;"><i class="fa-solid fa-exclamation-triangle" style="margin-right: 8px;"></i>Phone auth requires HTTPS or localhost. File:// protocol not supported.</div>';
+                updatePhoneStatus('Error: Phone authentication requires a proper web server (not file:// protocol)', 'error');
+                return;
+            }
+            
             // Wait for Firebase to be ready
             if (window.firebaseAuth && window.FirebaseRecaptchaVerifier) {
                 setupRecaptcha();
             } else {
-                console.log('Firebase not ready yet, waiting for firebaseReady event...');
-                container.innerHTML = '<div style="text-align: center; color: #ffc107;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i>Waiting for Firebase SDK...</div>';
-                container.classList.add('loading');
                 window.addEventListener('firebaseReady', setupRecaptcha, { once: true });
             }
         }
-        
-        function setupRecaptcha() {
+          function setupRecaptcha() {
             console.log('Setting up reCAPTCHA...');
+            console.log('Firebase Auth available:', !!window.firebaseAuth);
+            console.log('RecaptchaVerifier available:', !!window.FirebaseRecaptchaVerifier);
+            console.log('Current domain:', window.location.origin);
+            
             const container = document.getElementById('recaptcha-container');
             const sendOtpButton = document.getElementById('send-otp-btn');
 
@@ -1201,7 +1207,10 @@
                     container.classList.remove('loading');
                     container.classList.add('error');
                     return;
-                }                window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier(
+                }                // Use correct Firebase v9 RecaptchaVerifier constructor
+                // Syntax: new RecaptchaVerifier(auth, containerId, parameters)
+                window.recaptchaVerifier = new window.FirebaseRecaptchaVerifier(
+                    window.firebaseAuth,
                     'recaptcha-container',
                     {
                         'size': 'normal',
@@ -1226,8 +1235,7 @@
                             container.classList.add('error');
                             if(sendOtpButton) sendOtpButton.disabled = true;
                         }
-                    },
-                    window.firebaseAuth
+                    }
                 );
 
                 window.recaptchaVerifier.render().then((widgetId) => {
@@ -1289,15 +1297,12 @@
             // Update UI
             sendBtn.disabled = true;
             sendBtn.textContent = 'Sending...';
-            updatePhoneStatus('Sending OTP...', 'info');
-
-            // Use Firebase Auth to send OTP
+            updatePhoneStatus('Sending OTP...', 'info');            // Use Firebase Auth to send OTP
             window.firebaseSignInWithPhoneNumber(window.firebaseAuth, formattedPhone, window.recaptchaVerifier)
                 .then((confirmationResult) => {
                     console.log('OTP sent successfully:', confirmationResult);
                     window.confirmationResult = confirmationResult;
-                    
-                    updatePhoneStatus(`OTP sent to ${formattedPhone}`, 'success');
+                      updatePhoneStatus(`OTP sent to ${formattedPhone}`, 'success');
                     document.getElementById('otp-input-container').style.display = 'block';
                     document.getElementById('otp-input').focus();
                     
@@ -1320,8 +1325,17 @@
                             // Re-initialize reCAPTCHA on failure
                             setTimeout(retryRecaptcha, 1000);
                             break;
+                        case 'auth/phone-number-already-exists':
+                            errorMessage = 'This phone number is already registered.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Phone authentication not enabled. Please check Firebase console.';
+                            break;
+                        case 'auth/quota-exceeded':
+                            errorMessage = 'SMS quota exceeded. Please try again later.';
+                            break;
                         default:
-                            errorMessage = error.message;
+                            errorMessage = `Error: ${error.message}`;
                     }
                     
                     updatePhoneStatus(errorMessage, 'error');
@@ -1945,8 +1959,7 @@
                     items: JSON.parse(localStorage.getItem('aadya_cart') || '[]'),
                     total: document.getElementById('total')?.textContent || '₹0', // Ensure total is captured
                     orderDate: new Date().toISOString(),
-                    instructions: orderData.instructions,
-                    discountApplied: localStorage.getItem('aadya_applied_coupon') ? JSON.parse(localStorage.getItem('aadya_applied_coupon')).code : null,
+                    instructions: orderData.instructions,                    discountApplied: localStorage.getItem('aadya_applied_coupon') ? JSON.parse(localStorage.getItem('aadya_applied_coupon')).code : null,
                     discountAmount: document.getElementById('discount-row').style.display === 'flex' ? document.getElementById('discount').textContent : null
                 };
                 
